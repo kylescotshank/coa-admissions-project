@@ -16,13 +16,12 @@
 # Notes on Data Scrubbing:
 #
 # Original dataset contained 1015 unique entries
-# 96 were removed for being ED1 (60) or ED2 (36) type applicants 
-# (These applicants are contractually bound to deposit, though some do not)
-# Ages were originally represented as decimals: they've been rounded to the nearest whole number.
-# 2 entries were removed for data errors with ages (no ages entered)
+# Ages were originally represented as decimals: they've been rounded down to the nearest whole number.
+# 1 entry was removed for suspected data entry errors 
 # 4 entries were removed for data errors with a_rank and p_rank (no rankings entered)
 # 
-# Thus, our final data set contains 915 unique entries.
+#
+# Thus, our final data set contains 1010 unique entries.
 #------------------------
 
 #------------------------
@@ -33,9 +32,7 @@ library(car)
 library(aod)
 library(plyr)
 
-oldData<-read.csv("C:/Users/Kyle Shank/Desktop/SCHOOL/COA/ECONOMETRICS/github project/coa_admit_data_2011_2012_2013.csv")
-NewData<-read.csv("C:/Users/Kyle Shank/Desktop/SCHOOL/COA/ECONOMETRICS/Admissions 2014/fa14data_scrub.csv")
-final<-read.csv("C:/Users/Kyle Shank/Desktop/SCHOOL/COA/ECONOMETRICS/Admissions 2014/final.csv")
+oldData<-read.csv("C:/Users/Kyle Shank/Desktop/SCHOOL/COA/ECONOMETRICS/github project/coa_admit_data_with_ed.csv")
 
 ## ----------------------------------------------------------------------
 ## ----------------------------------------------------------------------
@@ -45,15 +42,42 @@ final<-read.csv("C:/Users/Kyle Shank/Desktop/SCHOOL/COA/ECONOMETRICS/Admissions 
 ## ----------------------------------------------------------------------
 ## ----------------------------------------------------------------------
 
-total.admitted<-length(oldData$outcome)
+total.admits<-length(oldData$outcome)
 total.deposits<-sum(oldData$outcome==1)
-percent.total.deposits<-total.deposits/total.admitted
-total.admitted
+percent.total.deposits<-total.deposits/total.admits
+total.admits
 total.deposits
 percent.total.deposits
 ## ----------------------------------------------------------------------
-## Our data set contains 913 total applicants, of which 292 deposited. 
-## This gives us a net deposit rate of 31.98%.
+## Our data set contains 1010 total applicants, of which 358 deposited. 
+## This gives us a net deposit rate of 35.44%. we face a question, then: 
+## should we keep ED students in our analysis? (i.e.; do all ed students
+## deposit?)
+## ----------------------------------------------------------------------
+
+total.ed.admits<-sum(oldData$ed==1)
+total.ed.deposits<-sum(oldData$ed==1 & oldData$outcome==1)
+percent.total.admits<-total.ed.admits/total.admits
+percent.total.deposits<-total.ed.deposits/total.deposits
+ed.deposit.rate<-total.ed.deposits/total.ed.admits
+total.ed.admits
+total.ed.deposits
+percent.total.admits
+percent.total.deposits
+ed.deposit.rate
+
+## ----------------------------------------------------------------------
+## Of 1010 total admitted students, 96 of these were ED applicants. Of 
+## Of the 358 total deposits, 89 of those were from ED students. Thus, ED
+## applicants comprise approximately 9.5% of the total admitted students from
+## 2011-2013, but comprise nearly 25% of total deposits over the same period of time.
+## The deposit rate of ED students is approximately 93%. 
+##
+## Interesting finding: of our ED admits, the mean and median COA award for
+## those that deposited was $19,199 and $2,860, respectively. 
+## For those that did not deposit, these values are $22,750 and 0, respectively.
+## of the 7 ED admits that did not deposit, six were given award amounts of 0. This
+## particular admitted student, id# 132035, was also an international student. 
 ## ----------------------------------------------------------------------
 
 mean(oldData$age)
@@ -105,6 +129,7 @@ percent.females.deposited
 ## 68% of deposits came from female admitted students. Of 636 admitted female students,
 ## 200 deposited, giving us a deposit rate of 31.44%. This is slightly lower than the
 ## deposit rate for males (92 deposited, 277 admitted), which is 33.2%
+##
 ## ----------------------------------------------------------------------
 
 whites.admitted<-sum(oldData$white==1,na.rm=TRUE)
