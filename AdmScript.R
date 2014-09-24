@@ -73,87 +73,125 @@ ed.deposit.rate
 ## 2011-2013, but comprise nearly 25% of total deposits over the same period of time.
 ## The deposit rate of ED students is approximately 93%. 
 ##
-## Interesting finding: of our ED admits, the mean and median COA award for
-## those that deposited was $19,199 and $2,860, respectively. 
-## For those that did not deposit, these values are $22,750 and 0, respectively.
+## just.ed<- oldData[oldData$ed==1,]
+## just.ed.nr<-oldData[oldData$ed==1 & oldData&outcome==0,]
+## mean(just.ed$award)
+## median(just.ed$award)
+## mean(just.ed.nr$award)
+## median(just.ed.nr$award)
+##
+## Interesting finding (from above): of our ED admits, the mean and median COA award for
+## those that deposited was $19,199 and $22,750, respectively. (st. div = 11,781.15)
+## For those that did not deposit, these values are $2,860 and 0, respectively. (st.div = 7567.98)
 ## of the 7 ED admits that did not deposit, six were given award amounts of 0. This
 ## particular admitted student, id# 132035, was also an international student. 
+## This reinforces the commonsense notion that ED students are highly sensitive to aid amounts
 ## ----------------------------------------------------------------------
 
 mean(oldData$age)
 median(oldData$age)
 sd(oldData$age)
+
 ## ----------------------------------------------------------------------
-## the average applicant was approximately 19 years old, with a standard
-## deviation of 2.26 years
+## the average applicant was approximately 19 years old (mean 18.85 / median 18), with a standard
+## deviation of 2.24 years
 ## ----------------------------------------------------------------------
 
-number.freshman.applicants<-sum(oldData$freshman==1)
-number.transfer.applicants<-sum(oldData$freshman==0)
-percent.freshman.applicants<-number.freshman.applicants/total.admitted
-percent.transfer.applicants<-number.transfer.applicants/total.admitted
+freshman.admits<-sum(oldData$freshman==1)
+transfer.admits<-sum(oldData$freshman==0)
+percent.freshman.admits<-freshman.admits/total.admits
+percent.transfer.admits<-transfer.admits/total.admits
 freshman.deposits<-sum(oldData$freshman==1 & oldData$outcome==1)
 percent.freshman.deposits<-freshman.deposits/total.deposits
 transfer.deposits<-sum(oldData$freshman==0 & oldData$outcome==1)
-percent.transfer.deposits<-1-percent.freshman.deposits
-number.freshman.applicants
-number.transfer.applicants
-percent.freshman.applicants
-percent.transfer.applicants
+percent.transfer.deposits<-transfer.deposits/total.deposits
+freshman.deposit.rate<-freshman.deposits/freshman.admits
+transfer.deposit.rate<-transfer.deposits/transfer.admits
+freshman.admits
+transfer.admits
+percent.freshman.admits
+percent.transfer.admits
 freshman.deposits
 transfer.deposits
 percent.freshman.deposits
 percent.transfer.deposits
+freshman.deposit.rate
+transfer.deposit.rate
+
 ## ----------------------------------------------------------------------
-## 742 of 913 applicants were freshman, 171 were transfers. This
-## gives us a freshman and applicant percentage of 81% and 19%, respectively.
-## Of our 292 deposits, 190 of those were from freshman applicants.
-## Thus, of our total deposits, approximately 65% of those were from freshman
-## and approximately 35% were from transfer applicants. Since 190 of 742 freshman deposited,
-## this gives us a deposit rate of approximately 26%. Since 102 of 171 transfer applicants
-## deposited, this gives us a deposit rate of nearly 60%.
+## 834 of 1010 admitted students were freshman, 176 were transfers. This
+## gives us an admitted student pool comprised of of approximately 
+## 82.6% freshmen and 17.4% transfers.
+## Of our 358 deposits, 259 of those were from freshman applicants.
+## Thus, of our total deposits, approximately 72.3% of those were from freshman
+## applicants and approximately 27.6% were from transfer applicants. 
+## Since 259 of 834 freshman deposited, this gives us a deposit rate of 
+## approximately 31%. Since 99 of 176 transfer applicants
+## deposited, this gives us a deposit rate of 56.25%.
 ## ----------------------------------------------------------------------
 
-females.admitted<-sum(oldData$female==1)
-percent.females.admitted<-females.admitted/total.total.admitted
-females.deposited<-sum(oldData$female==1 & oldData$outcome==1)
-percent.females.deposited<-females.deposited/total.deposits
-females.admitted
-percent.females.admitted
-females.deposited
-percent.females.deposited
+female.admits<-sum(oldData$female==1)
+male.admits<-sum(oldData$female==0)
+percent.female.admits<-female.admits/total.admits
+percent.male.admits<-male.admits/total.admits
+female.deposits<-sum(oldData$female==1 & oldData$outcome==1)
+male.deposits<-sum(oldData$female==0 & oldData$outcome==1)
+percent.female.deposits<-female.deposits/total.deposits
+percent.male.deposits<-male.deposits/total.deposits
+female.deposit.rate<-female.deposits/female.admits
+male.deposit.rate<-male.deposits/male.admits
+female.admits
+male.admits
+percent.female.admits
+percent.male.admits
+female.deposits
+male.deposits
+percent.female.deposits
+percent.male.deposits
+female.deposit.rate
+male.deposit.rate
 ## ----------------------------------------------------------------------
-## Of our 913 records, 636 of the admitted students were female, comprising roughly
-## 70% of he entire admitted student body. 
-## Of 292 deposits, 200 of those recorded were female, which shows that roughly
-## 68% of deposits came from female admitted students. Of 636 admitted female students,
-## 200 deposited, giving us a deposit rate of 31.44%. This is slightly lower than the
-## deposit rate for males (92 deposited, 277 admitted), which is 33.2%
-##
+## Of our 1010 admits, 702 of the admitted students were female, comprising roughly
+## 69.5% of the entire admitted student body (308 were male, comprising 30.5%).
+## Of 358 deposits, 246 of those  were female, which shows that roughly
+## 68.7% of deposits came from female admitted students (112 were male, comprising 31.3%).
+## Of 702 admitted female students, 246 deposited, giving us a deposit rate of 35.04%. 
+## Of 308 admitted male students, 112 deposited, for a deposit rate of 36.36%.
 ## ----------------------------------------------------------------------
 
-whites.admitted<-sum(oldData$white==1,na.rm=TRUE)
-nonwhites.admitted<-sum(oldData$white==0, na.rm=TRUE)
-percent.whites.admitted<-whites.admitted/total.admitted
-whites.deposited<-sum(oldData$white==1 & oldData$outcome==1,na.rm=TRUE)
-nonwhites.deposited<-sum(oldData$white==0 & oldData$outcome==1, na.rm=TRUE)
-percent.whites.deposited<-whites.deposited/total.deposits
+white.admits<-sum(oldData$white==1,na.rm=TRUE)
+nonwhite.admits<-sum(oldData$white==0, na.rm=TRUE)
+percent.white.admits<-white.admits/total.admits
+percent.nonwhite.admits<-nonwhite.admits/total.admits
+white.deposits<-sum(oldData$white==1 & oldData$outcome==1,na.rm=TRUE)
+nonwhite.deposits<-sum(oldData$white==0 & oldData$outcome==1, na.rm=TRUE)
+percent.white.deposits<-white.deposits/total.deposits
+percent.nonwhite.deposits<-nonwhite.deposits/total.deposits
+white.deposit.rate<-white.deposits/white.admits
+nonwhite.deposit.rate<-nonwhite.deposits/nonwhite.admits
 missing.race<-sum(is.na(oldData$white))
-whites.admitted
-nonwhites.admitted
-percent.whites.admitted
-whites.deposited
-percent.whites.deposited
+missing.race.deposits<-sum(is.na(oldData$white & oldData$outcome==1))
+missing.race.deposit.rate<-missing.race.deposits/missing.race
+white.admits
+nonwhite.admits
+percent.white.admits
+percent.nonwhite.admits
+white.deposits
+nonwhite.deposits
+percent.white.deposits
+percent.nonwhite.deposits
+white.deposit.rate
+nonwhite.deposit.rate
 missing.race
 ## ----------------------------------------------------------------------
-## Of our 913, 648 of the admitted students self-identified as being caucasian.
-## This means that nearly 71% of our admitted students were white. 
-## Of 292 deposits, 222 of those recorded were from people identifying as white, meaning
-## roughly 76% of the depositing students were white. This means that
-## roughly 34% (222/648) of admitted white students will deposit. This also holds true for admitted students
-## that do not identify as white (124) of which 43 deposited, for a deposit rateof 34.67%.
-## NOTE: We are missing racial data for 141 admitted students. Of those 141 admitted,
-## 27 deposited, giving a "no-race-given" deposit rate of 19%. 
+## Of our 1010 admits, 733 of the admitted students self-identified as being white,
+## giving us a total admitted student composition of roughly 72.5% caucasian (with 13.2% identify
+## as a different race and 14.3% not responding).
+## Of 358 deposits, 289 of those recorded were from people identifying as white, meaning
+## roughly 80.7% of the depositing students were white (with 13.1% identifying as another race
+## and 6.2% not responding). This means that the deposit rate for white admitted students
+## was 39.4%, and the deposit rate for nonwhite students was 35.07%. The deposit rate for
+## students who did not identify their race (143 admitted students) was 15.38% (22 deposits/143 admits)
 ## ----------------------------------------------------------------------
 
 intl.admitted<-sum(oldData$intl==1)
