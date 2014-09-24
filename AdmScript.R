@@ -50,9 +50,7 @@ total.deposits
 percent.total.deposits
 ## ----------------------------------------------------------------------
 ## Our data set contains 1010 total applicants, of which 358 deposited. 
-## This gives us a net deposit rate of 35.44%. we face a question, then: 
-## should we keep ED students in our analysis? (i.e.; do all ed students
-## deposit?)
+## This gives us a net deposit rate of 35.44%. 
 ## ----------------------------------------------------------------------
 
 total.ed.admits<-sum(oldData$ed==1)
@@ -74,11 +72,9 @@ ed.deposit.rate
 ## The deposit rate of ED students is approximately 93%. 
 ##
 ## just.ed<- oldData[oldData$ed==1,]
-## just.ed.nr<-oldData[oldData$ed==1 & oldData&outcome==0,]
-## mean(just.ed$award)
-## median(just.ed$award)
-## mean(just.ed.nr$award)
-## median(just.ed.nr$award)
+## just.ed.nr<-oldData[oldData$ed==1 & oldData$outcome==0,]
+## summary(just.ed$award)
+## summary(just.ed.nr$award)
 ##
 ## Interesting finding (from above): of our ED admits, the mean and median COA award for
 ## those that deposited was $19,199 and $22,750, respectively. (st. div = 11,781.15)
@@ -194,35 +190,63 @@ missing.race
 ## students who did not identify their race (143 admitted students) was 15.38% (22 deposits/143 admits)
 ## ----------------------------------------------------------------------
 
-intl.admitted<-sum(oldData$intl==1)
-percent.intl.admitted<-intl.admitted/total.admitted
+intl.admits<-sum(oldData$intl==1)
+percent.intl.admits<-intl.admits/total.admits
 intl.deposits<-sum(oldData$intl==1 & oldData$outcome==1)
 percent.intl.deposits<-intl.deposits/total.deposits
-intl.admitted
-percent.intl.admitted
+intl.deposit.rate<-intl.deposits/intl.admits
+intl.admits
+percent.intl.admits
 intl.deposits
 percent.intl.deposits
+intl.deposit.rate
 ## ----------------------------------------------------------------------
-## Of our 913, 79 of the admitted students were international students,
-## meaning approximately 9% of our admitted students were international.
-## Of 292 deposits, 28 were international students, giving us a deposit ratio
-## of nearly 10%. This means that roughly 35% (28/79) of international students that are admitted, deposit.
+## Of the 1010 admitted students, 101 of the admitted students were international students.
+## Therefore, 10% of the admitted students were international student.
+## Of 358 deposits, 42 were international students, giving us a deposit ratio
+## of 11.73%. We therefore have a deposit ratio of 41.58% (42 deposits / 101 admitted).
+##
+## just.intl<- oldData[oldData$intl==1 & oldData$outcome==1,]
+## just.intl.nr<-oldData[oldData$intl==1 & oldData$outcome==0,]
+## summary(just.intl$award)
+## summary(just.intl.nr$award)
+##
+## Interestingly, the international student aid compositions seem to be relatively similar.
+## International students that deposit have generally higher mean ($24,060) and median ($26,360)
+## award values than those international students that did not deposit ($18,610 and $22,950), but
+## not significantly so.
 ## ----------------------------------------------------------------------
 
-married.admitted<-sum(oldData$married==1, na.rm=TRUE)
-percent.married.admitted<-married.admitted/total.admitted
+married.admits<-sum(oldData$married==1, na.rm=TRUE)
+not.married.admits<-sum(oldData$married==0, na.rm=TRUE)
+percent.married.admits<-married.admits/total.admits
+percent.not.married.admits<-not.married.admits/total.admits
 married.deposits<-sum(oldData$married==1 & oldData$outcome==1, na.rm=TRUE)
+not.married.deposits<-sum(oldData$married==0 & oldData$outcome==1, na.rm=TRUE)
 percent.married.deposits<-married.deposits/total.deposits
-married.deposit.rate<-married.deposits/married.admitted
+percent.not.married.deposits<-not.married.deposits/total.deposits
+married.deposit.rate<-married.deposits/married.admits
 missing.married<-sum(is.na(oldData$married))
-married.admitted
-percent.married.admitted
+missing.married.deposits<-sum(is.na(oldData$married & oldData$outcome==1))
+missing.married.deposit.rate<-missing.married.deposits/missing.married
+married.admits
+not.married.admits
+percent.married.admits
+percent.not.married.admits
 married.deposits
+not.married.deposits
 percent.married.deposits
+percent.not.married.deposits
+missing.married
+missing.married.deposits
+missing.married.deposit.rate
+
 ## ----------------------------------------------------------------------
-## Of 913 admitted students, 600 had parents who were married, for a total
-## of approximately 66% of admitted students. Of students who deposited, 
-## 181 had parents that were married, comprising ~62% of depositing students.
+## Of 1010 admitted students, 652 had parents who were married for a total
+## of approximately 64.5% of admitted students. 346 students did not, comprising
+## 34.25% of admitted students. 12 students did not respond, comprising 1.1% of the admitted student body.
+## Of the
+## 215 had parents that were married, comprising approximately 60% of depositing students.
 ## This gives us a deposit ratio of 30%. This is slightly worse than the deposit ratio
 ## for students who do not have married parents (302 admitted / 107 accepted = 35.4% deposit ratio).
 ## ----------------------------------------------------------------------
