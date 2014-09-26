@@ -420,8 +420,45 @@ sd(just.deposits.hsrank$hsrank)
 ## was the 79% percentile, with a median of the 83% and a standard deviation of 16%. 
 ## ----------------------------------------------------------------------
 
+sat.admits<-sum(!is.na(oldData$sat))
+no.sat.admits<-sum(is.na(oldData$sat))
+percent.sat.admits<-sat.admits/total.admits
+percent.no.sat.admits<-no.sat.admits/total.admits
+sat.deposits<-sum(!is.na(oldData$sat) & oldData$outcome==1)
+no.sat.deposits<-sum(is.na(oldData$sat)& oldData$outcome==1)
+percent.sat.deposits<-sat.deposits/total.deposits
+percent.no.sat.deposits<-no.sat.deposits/total.deposits
+sat.deposit.rate<-sat.deposits/sat.admits
+no.sat.deposit.rate<-no.sat.deposits/no.sat.admits
+sat.admits
+no.sat.admits
+percent.sat.admits
+percent.no.sat.admits
+sat.deposits
+no.sat.deposits
+percent.sat.deposits
+percent.no.sat.deposits
+sat.deposit.rate
+no.sat.deposit.rate
+mean(oldData$sat, na.rm=TRUE)
+median(oldData$sat, na.rm=TRUE)
+sd(oldData$sat, na.rm=TRUE)
+just.deposits.sat<-oldData[oldData$outcome==1 & !is.na(oldData$sat),]
+mean(just.deposits.sat$sat)
+median(just.deposits.sat$sat)
+sd(just.deposits.sat$sat)
+
 ## ----------------------------------------------------------------------
-## Of 
+## Of 1010 admitted students, 524 students reported SAT scores and 486 did not, comprising
+## 51.88% and 48.12% of the admitted student population, respectively.
+## of 358 depositing students, 150 students reported SAT scores and 208 did not, comprising 
+## 41.89% and 58.1% of the depositing student population, respectively. Thus, we have a
+## deposit rate of 28.63% for students who supply SAT scores and 42.8% for students that do not.
+## The mean SAT score for admitted students was 1898, with a median of 1910 and a standard deviation of 195 points.
+## The mean SAT score for depositing students was 1894, with a median of 1900 and a stand deviation of 171 points.
+## ----------------------------------------------------------------------
+
+
 #------------------------
 # Run Regression / Summary
 #------------------------
