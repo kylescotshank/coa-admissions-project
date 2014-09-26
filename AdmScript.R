@@ -497,20 +497,44 @@ sd(just.deposits.act$act)
 ## ----------------------------------------------------------------------
 
 summary(oldData$a_rank)
+
 deposit.arank<-oldData[oldData$outcome==1,]
 summary(deposit.arank$a_rank)
+
 just.female.arank<-oldData[oldData$female==1,]
 summary(just.female.arank$a_rank)
 just.female.deposit.arank<-oldData[oldData$female==1 & oldData$outcome==1,]
 summary(just.female.deposit.arank$a_rank)
+
 just.male.arank<-oldData[oldData$female==0,]
 summary(just.male.arank$a_rank)
 just.male.deposit.arank<-oldData[oldData$female==0 & oldData$outcome==1,]
 summary(just.male.deposit.arank$a_rank)
+
 just.white.arank<-oldData[oldData$white==1,]
 summary(just.white.arank$a_rank, na.rm=TRUE)
+just.white.arank.deposits<-oldData[oldData$white==1 & oldData$outcome==1,]
+summary(just.white.arank.deposits$a_rank, na.rm=TRUE)
+
 just.notwhite.arank<-oldData[oldData$white==0,]
 summary(just.notwhite.arank$a_rank)
+just.notwhite.arank.deposits<-oldData[oldData$white==0 & oldData$outcome==0,]
+summary(just.notwhite.arank.deposits$a_rank)
+
+just.freshman.arank<-oldData[oldData$freshman==1,]
+summary(just.freshman.arank$a_rank)
+just.freshman.arank.deposits<-oldData[oldData$freshman==1 & oldData$outcome==1,]
+summary(just.freshman.arank.deposits$a_rank)
+
+just.transfer.arank<-oldData[oldData$freshman==0,]
+summary(just.transfer.arank$a_rank)
+just.transfer.arank.deposits<-oldData[oldData$freshman==0 & oldData$outcome==1,]
+summary(just.transfer.arank.deposits$a_rank)
+
+just.intl.arank<-oldData[oldData$intl==1,]
+summary(just.intl.arank$a_rank)
+just.intl.arank.deposits<-oldData[oldData$intl==1 & oldData$outcome==1,]
+summary(just.intl.arank.deposits$a_rank)
 ## ----------------------------------------------------------------------
 ## Of 1010 admitted students, the mean a_rank score was 2.714, with the median of 3 and standard deviation of 0.819
 ## Of 358 depositing students, the mean a_rank score was 2.832, with a median of 3 and standard deviation of 0.816
@@ -520,7 +544,15 @@ summary(just.notwhite.arank$a_rank)
 ## (interesting, the only a_rank of 6 is [524,], a white male who, in the end, deposited.)
 ## Of 112 male depositing students, the mean a_rank was 3, with a median of 3 and a standard deviation of 0.869
 ## Of 876 white admitted students, the mean a_rank was 2.708, with a median of 3 and a standard deviation of 0.816
+## Of 311 white depositing students, the mean a_rank was 2.799, with a median of 3 and a standard deviation of 0.804
 ## Of 227 non-white admitted students, the mean a_rank was 2.724, with a median of 3 and a standard deviation of 0.836
+## Of 208 non-white depositing students, the mean a_rank was 2.632, with a median of 3 and a standard deviation of 0.851
+## Of 834 admitted freshman students, the mean a_rank was 2.694, with a median of 3 and a standard deviation of 0.824
+## Of 259 depositing freshman students, the mean a_rank was 2.819, with a median of 3 and a standard deviation of 0.813
+## Of 176 admitted transfer students, the mean a_rank was 2.807, with a median of 3 and a standard deviation of 0.798
+## Of 99 depositing transfer students, the mean a_rank was 2.869, with a median of 3 and a standard deviation of 0.829
+## Of 101 admitted international students, the mean a_rank was 2.545 with a median of 2 and a standard deviation of 0.794
+## of 42 depositing international students, the mean a_rank was 2.643 with a median of 2.5 and a standard deviation of 0.727
 #------------------------
 # Run Regression / Summary
 #------------------------
