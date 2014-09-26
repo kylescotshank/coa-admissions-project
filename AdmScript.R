@@ -458,7 +458,69 @@ sd(just.deposits.sat$sat)
 ## The mean SAT score for depositing students was 1894, with a median of 1900 and a stand deviation of 171 points.
 ## ----------------------------------------------------------------------
 
+act.admits<-sum(!is.na(oldData$act))
+no.act.admits<-sum(is.na(oldData$act))
+percent.act.admits<-act.admits/total.admits
+percent.no.act.admits<-no.act.admits/total.admits
+act.deposits<-sum(!is.na(oldData$act) & oldData$outcome==1)
+no.act.deposits<-sum(is.na(oldData$act)& oldData$outcome==1)
+percent.act.deposits<-act.deposits/total.deposits
+percent.no.act.deposits<-no.act.deposits/total.deposits
+act.deposit.rate<-act.deposits/act.admits
+no.act.deposit.rate<-no.act.deposits/no.act.admits
+act.admits
+no.act.admits
+percent.act.admits
+percent.no.act.admits
+act.deposits
+no.act.deposits
+percent.act.deposits
+percent.no.act.deposits
+act.deposit.rate
+no.act.deposit.rate
+mean(oldData$act, na.rm=TRUE)
+median(oldData$act, na.rm=TRUE)
+sd(oldData$act, na.rm=TRUE)
+just.deposits.act<-oldData[oldData$outcome==1 & !is.na(oldData$act),]
+mean(just.deposits.act$act)
+median(just.deposits.act$act)
+sd(just.deposits.act$act)
 
+## ----------------------------------------------------------------------
+## Of 1010 admitted students, 202 students submitted ACT scores and 808 did not,
+## comprising 20% and 80% of the admitted student population. 
+## Of 358 total deposits, 64 students submitted ACT scores and 294 did not,
+## comprising 17.88% and 82.12% of the depositing student population. The deposit rate
+## for those that provided ACT scores was 31.68% and 36.37% for those that did not.
+## The average ACT score for an admitted student was 28.26, with a median of 28 and a standard deviation of 3.17.
+## The average ACT score for a depositing student was 28.31, with a median of 29 and a standard deviation of 2.9.
+## ----------------------------------------------------------------------
+
+summary(oldData$a_rank)
+deposit.arank<-oldData[oldData$outcome==1,]
+summary(deposit.arank$a_rank)
+just.female.arank<-oldData[oldData$female==1,]
+summary(just.female.arank$a_rank)
+just.female.deposit.arank<-oldData[oldData$female==1 & oldData$outcome==1,]
+summary(just.female.deposit.arank$a_rank)
+just.male.arank<-oldData[oldData$female==0,]
+summary(just.male.arank$a_rank)
+just.male.deposit.arank<-oldData[oldData$female==0 & oldData$outcome==1,]
+summary(just.male.deposit.arank$a_rank)
+just.white.arank<-oldData[oldData$white==1,]
+summary(just.white.arank$a_rank, na.rm=TRUE)
+just.notwhite.arank<-oldData[oldData$white==0,]
+summary(just.notwhite.arank$a_rank)
+## ----------------------------------------------------------------------
+## Of 1010 admitted students, the mean a_rank score was 2.714, with the median of 3 and standard deviation of 0.819
+## Of 358 depositing students, the mean a_rank score was 2.832, with a median of 3 and standard deviation of 0.816
+## Of 702 female admitted students, the mean a_rank score was 2.67, with a median of 3 and standard deviation of 0.789
+## Of 246 female depositing students, the mean a_rank score was 2.756, with a median of 3 and standard deviation of 0.780
+## Of 208 male admitted students, the  mean a_rank was 2.815, with a median of 3 and a standard deviation of 0.877 
+## (interesting, the only a_rank of 6 is [524,], a white male who, in the end, deposited.)
+## Of 112 male depositing students, the mean a_rank was 3, with a median of 3 and a standard deviation of 0.869
+## Of 876 white admitted students, the mean a_rank was 2.708, with a median of 3 and a standard deviation of 0.816
+## Of 227 non-white admitted students, the mean a_rank was 2.724, with a median of 3 and a standard deviation of 0.836
 #------------------------
 # Run Regression / Summary
 #------------------------
