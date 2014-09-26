@@ -1,4 +1,4 @@
-#------------------------
+## ----------------------------------------------------------------------
 # Kyle Scot Shank
 # 9/18/14
 #
@@ -22,11 +22,34 @@
 # 
 #
 # Thus, our final data set contains 1010 unique entries.
-#------------------------
+#
+# 
+# Explanation of variables:
+#
+# "id" = unique numeric ID assigned to applicants 
+# "outcome" = binary variable; 1 if the student deposited, 0 if the student did not.
+# "freshman" = binary variable; 1 if the student was a freshman applicants, 0 if not (if the student was labelled a "READMIT", they were assigned a 0)
+# "ed" = binary variable; 1 if the student applied Early Decision (ED1 or ED2), 0 if applied Regular Decision
+# "age" = age of the applicant, computed from data of birth and expected date of entry
+# "female" = binary variable; 1 if the student was female, 0 if male
+# "white" = binary variable; 1 if the student responded to their racial identification question with "White", 0 if any other response (N/A if student did not respond/data error)
+# ("white" was a forced binary: original data contained other optional responses, i.e. "Black", "Asian", etc. Other responses were condensed.)
+# "newengland" = binary variable; 1 if the student was from a New England state (ME, MA, VT, CT, RI, NH), 0 if otherwise (N/A if student did not respond/data error)
+# "intl" = binary variable; 1 if student was an international applicant, 0 otherwise 
+# "married" = binary variable; 1 if student responded to questions regarding parental relationship status with "married", 0 otherwise (N/A if student did not respond/data error).
+# ("married" was a forced binary: original data contained other optional responses, i.e. "Widowed", "Single", etc. Other responses were condensed.)
+# "hsgpa" = student high school gpa at time of graduation, self-reported. (N/A if student did not respond/data error)
+# "hsrank" = student high school ranking, computed from self-reported rank and self-reported student body size. (N/A if student did not respond/data error)
+# "sat" & "act" = student SAT and ACT scores, self-reported (N/A if student did not respond/data error)
+# "a_rank" & "p_rank" = College of the Atlantic internal grading scheme; a_rank measures academic potential, p_rank measures personality/personal potential. Rank is descending (1-6, 1 the highest, 6 the lower).
+# "interview" = binary variable; 1 if student had an interview with an admissions counselor, 0 otherwise. (Computed from interview score codes; only students with interview scores were counted as having received an interview; scores were repressed and not represented here.)
+# "award" = Reported amount of COA financial aid award. Students with no award listed in master file had variable forced to 0. 
+#
+## ----------------------------------------------------------------------
 
-#------------------------
+## ----------------------------------------------------------------------
 # Preamble
-#------------------------
+## ----------------------------------------------------------------------
 
 library(car)
 library(aod)
@@ -179,6 +202,7 @@ percent.nonwhite.deposits
 white.deposit.rate
 nonwhite.deposit.rate
 missing.race
+
 ## ----------------------------------------------------------------------
 ## Of our 1010 admits, 733 of the admitted students self-identified as being white,
 ## giving us a total admitted student composition of roughly 72.5% caucasian (with 13.2% identify
@@ -188,6 +212,57 @@ missing.race
 ## and 6.2% not responding). This means that the deposit rate for white admitted students
 ## was 39.4%, and the deposit rate for nonwhite students was 35.07%. The deposit rate for
 ## students who did not identify their race (143 admitted students) was 15.38% (22 deposits/143 admits)
+## ----------------------------------------------------------------------
+
+newengland.admits<-sum(oldData$newengland==1, na.rm=TRUE)
+not.newengland.admits<-sum(oldData$newengland==0, na.rm=TRUE)
+percent.newengland.admits<-newengland.admits/total.admits
+percent.not.newengland.admits<-not.newengland.admits/total.admits
+newengland.deposits<-sum(oldData$newengland==1 & oldData$outcome==1, na.rm=TRUE)
+not.newengland.deposits<-sum(oldData$newengland==0 & oldData$outcome==1, na.rm=TRUE)
+percent.newengland.deposits<-newengland.deposits/total.deposits
+percent.not.newengland.deposits<-not.newengland.deposits/total.deposits
+newengland.deposit.rate<-newengland.deposits/newengland.admits
+missing.newengland<-sum(is.na(oldData$newengland))
+missing.newengland.deposits<-sum(is.na(oldData$newengland & oldData$outcome==1))
+missing.newengland.deposit.rate<-missing.married.deposits/missing.married
+newengland.admits
+not.newengland.admits
+percent.newengland.admits
+percent.not.newengland.admits
+newengland.deposits
+not.newengland.deposits
+percent.newengland.deposits
+percent.not.newengland.deposits
+missing.newengland
+missing.newengland.deposits
+missing.newengland.deposit.rate
+
+## ----------------------------------------------------------------------
+## Of our 1010 admits, 348 of the admitted students were from New England states, with
+## 654 being from states outside of New England. Thus 34.45% of the admitted student body
+## was New Englanders, and 64.75% "from away". (8 students did not submit information regarding their
+## home state and/or data was incorrectly entered, comprising 0.79% of the student body)
+## 134 students from New England deposited, whereas 223 students not from New England deposited,
+## comprising 37.43% and 62.29% of the applicant pool, respectively. Of the 8 students which
+## did not submit state information and/or had data entry errors, only 1 deposited (interestingly enough,
+## this student had the "worst" A and P scores and received no award.)
+## Due to the way the data was cleaned, international students were groupd with those students not from
+## New England (both had the variable "newengland" = 0. If we remove international students from the "not.newengland" grouping,
+## the findings change somewhat. 553 non-New Englanders admitted, comprising 54.75% of the admitted student body.
+## 181 non-New Englanders deposited, comprising 50.55% of the depositing student body, for a deposit rate
+## of 32.73%. None of the 8 students above missing state values were international students. 
+# 
+# not.newengland.admits.corrected<-sum(oldData$newengland==0 & oldData$intl==0, na.rm=TRUE)
+# percent.not.newengland.admits.corrected<-not.newengland.admits.corrected/total.admits
+# not.newengland.deposits.corrected<-sum(oldData$outcome==1 & oldData$newengland==0 & oldData$intl==0, na.rm=TRUE)
+# percent.not.newengland.deposits.corrected<-not.newengland.deposits.corrected/total.deposits
+# not.newengland.deposit.rate.corrected<-not.newengland.deposits.corrected/not.newengland.admits.corrected
+# not.newengland.admits.corrected
+# percent.not.newengland.admits.corrected
+# not.newengland.deposits.corrected
+# percent.not.newengland.deposits.corrected
+# not.newengland.deposit.rate.corrected
 ## ----------------------------------------------------------------------
 
 intl.admits<-sum(oldData$intl==1)
