@@ -1,17 +1,19 @@
 ## ----------------------------------------------------------------------
 # Kyle Scot Shank
-# 9/18/14
+# 9/26/2014
 #
 # The purpose of this code is to perform a logistic regression on data
-# obtained from two years worth of records regarding matriculant deposits at College of the Atlantic.
+# obtained from three years worth of records regarding matriculant deposits at College of the Atlantic.
 #
-# We hope to use the admissions records provided from 2011,2012, and 2013 to see what key variables are present in the data
-# which may explain the decision to deposit or not deposit. Then, utilizing the estimated coefficients, we will
+# We hope to use the admissions records provided from 2011,2012, and 2013 to see what, if any, key variables 
+# may explain the decision to deposit or not deposit. Then, utilizing the estimated coefficients, we will
 # see how the regression equation predicts the outcomes in 2014. All of the individuals recorded
 # in this dataset were admitted to College of the Atlantic. 
 #
 # Since this project is being uploaded to Github and therefore will be in the public domain, all information 
 # containing potentially private information (names, ss number, etc.) have been "scrubbed" from he dataset.
+# Additionally, further privacy was enforced by encoding things such as parental marital status and home state
+# in a binary format (this also allowed for increased ease of stasticial manipulation).
 #
 # Notes on Data Scrubbing:
 #
@@ -39,7 +41,7 @@
 # "married" = binary variable; 1 if student responded to questions regarding parental relationship status with "married", 0 otherwise (N/A if student did not respond/data error).
 # ("married" was a forced binary: original data contained other optional responses, i.e. "Widowed", "Single", etc. Other responses were condensed.)
 # "hsgpa" = student high school gpa at time of graduation, self-reported. (N/A if student did not respond/data error)
-# "hsrank" = student high school ranking, computed from self-reported rank and self-reported student body size. (N/A if student did not respond/data error)
+# "hsrank" = student high school ranking, computed from self-reported rank and self-reported student body size. This is a percentile ranking. (N/A if student did not respond/data error)
 # "sat" & "act" = student SAT and ACT scores, self-reported (N/A if student did not respond/data error)
 # "a_rank" & "p_rank" = College of the Atlantic internal grading scheme; a_rank measures academic potential, p_rank measures personality/personal potential. Rank is descending (1-6, 1 the highest, 6 the lower).
 # "interview" = binary variable; 1 if student had an interview with an admissions counselor, 0 otherwise. (Computed from interview score codes; only students with interview scores were counted as having received an interview; scores were repressed and not represented here.)
@@ -379,7 +381,44 @@ sd(corrected.hsgpa.deposits$hsgpa)
 ## deposit (198/588). Students that do not submit GPAs have a deposit rate of 37.9% (160/422)
 ## ----------------------------------------------------------------------
 
+hsrank.admits<-sum(!is.na(oldData$hsrank))
+no.hsrank.admits<-sum(is.na(oldData$hsrank))
+percent.hsrank.admits<-hsrank.admits/total.admits
+percent.no.hsrank.admits<-no.hsrank.admits/total.admits
+hsrank.deposits<-sum(!is.na(oldData$hsrank) & oldData$outcome==1)
+no.hsrank.deposits<-sum(is.na(oldData$hsrank)& oldData$outcome==1)
+percent.hsrank.deposits<-hsrank.deposits/total.deposits
+percent.no.hsrank.deposits<-no.hsrank.deposits/total.deposits
+hsrank.deposit.rate<-hsrank.deposits/hsrank.admits
+no.hsrank.deposit.rate<-no.hsrank.deposits/no.hsrank.admits
+hsrank.admits
+no.hsrank.admits
+percent.hsrank.admits
+percent.no.hsrank.admits
+hsrank.deposits
+no.hsrank.deposits
+percent.hsrank.deposits
+percent.no.hsrank.deposits
+hsrank.deposit.rate
+no.hsrank.deposit.rate
+mean(oldData$hsrank, na.rm=TRUE)
+median(oldData$hsrank, na.rm=TRUE)
+sd(oldData$hsrank, na.rm=TRUE)
+just.deposits.hsrank<-oldData[oldData$outcome==1 & !is.na(oldData$hsrank),]
+mean(just.deposits.hsrank$hsrank)
+median(just.deposits.hsrank$hsrank)
+sd(just.deposits.hsrank$hsrank)
 
+## ----------------------------------------------------------------------
+## ----------------------------------------------------------------------
+## Of 1010 admitted students, 316 submitted high school rankings for review. 694
+## did not submit high school rankings. Thus, 31.28% of admitted students supplied rankings,
+## whereas 68.71% did not. Of 358 total deposits, 103 of those submitted high school rankings
+## for review, whereas 255 did not, comprising 28.77% and 71.23% of the depositing student body, respectively. 
+## The mean high school rank of an admitted student was the 82% percentile, with a median of 
+## the 86% percentile and a standard deviation of 15%. The mean high school rank of a depositing student
+## was the 79% percentile, with a median of the 83% and a standard deviation of 16%. 
+## ----------------------------------------------------------------------
 
 ## ----------------------------------------------------------------------
 ## Of 
