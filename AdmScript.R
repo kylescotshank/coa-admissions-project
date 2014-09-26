@@ -245,43 +245,63 @@ missing.married.deposit.rate
 ## Of 1010 admitted students, 652 had parents who were married for a total
 ## of approximately 64.5% of admitted students. 346 students did not, comprising
 ## 34.25% of admitted students. 12 students did not respond, comprising 1.1% of the admitted student body.
-## Of the
-## 215 had parents that were married, comprising approximately 60% of depositing students.
-## This gives us a deposit ratio of 30%. This is slightly worse than the deposit ratio
-## for students who do not have married parents (302 admitted / 107 accepted = 35.4% deposit ratio).
+## 215 of 358 deposiing students had married parents, comprising approximately 60% of depositing students.
+## 140 depositing students did not, comprising 39.1% of depositing students. 
+## 3 depositing students did not provide information for this variable, comprising 0.8% of the
+## depositing student body. 
 ## ----------------------------------------------------------------------
 
-hsgpa.admitted<-sum(!is.na(oldData$hsgpa))
-no.hsgpa.admitted<-sum(is.na(oldData$hsgpa))
-percent.hsgpa.admitted<-hsgpa.admitted/total.admitted
-percent.no.hsgpa.admitted<-no.hsgpa.admitted/total.admitted
+hsgpa.admits<-sum(!is.na(oldData$hsgpa))
+no.hsgpa.admits<-sum(is.na(oldData$hsgpa))
+percent.hsgpa.admits<-hsgpa.admits/total.admits
+percent.no.hsgpa.admits<-no.hsgpa.admits/total.admits
 hsgpa.deposits<-sum(!is.na(oldData$hsgpa) & oldData$outcome==1)
 no.hsgpa.deposits<-sum(is.na(oldData$hsgpa)& oldData$outcome==1)
 percent.hsgpa.deposits<-hsgpa.deposits/total.deposits
 percent.no.hsgpa.deposits<-no.hsgpa.deposits/total.deposits
-
-hsgpa.admitted
-corrected.hsgpa<-oldData$hsgpa[-714]
-## This is because there is one entry which has a non-standard GPA (94.92). 
-## We've suppressed this entry for calculated mean, median, and sd.
-mean(corrected.hsgpa, na.rm=TRUE)
-median(corrected.hsgpa, na.rm=TRUE)
-sd(corrected.hsgpa, na.rm=TRUE)
-no.hsgpa.admitted
-percent.hsgpa.admitted
-percent.no.hsgpa.admitted
+hsgpa.deposit.rate<-hsgpa.deposits/hsgpa.admits
+no.hsgpa.deposit.rate<-no.hsgpa.deposits/no.hsgpa.admits
+hsgpa.admits
+no.hsgpa.admits
+percent.hsgpa.admits
+percent.no.hsgpa.admits
 hsgpa.deposits
 no.hsgpa.deposits
 percent.hsgpa.deposits
 percent.no.hsgpa.deposits
+hsgpa.deposit.rate
+no.hsgpa.deposit.rate
+
+## We run into obvious problems, howver, when we begin to try and compute
+## averages for GPAs that have beeen admitted. This is primarily due to the differing
+## scales and methodologies utilized by different institutions. For example, we have two
+## entries [211,][890,] which have GPA values >5 [5.6] and [94.92] respectively (interestingly
+## enough, these students did not deposit). We have 43 entries where GPAs were greater than 4.0  (of which
+## only 5 deposited).
+## This is an acknowledged problem in both general statistics and in higer education admissions. 
+## Normalizing all of the GPA scores provided would not alleviate
+## this problem nor allow for more accurate comparative statistics. Therefore, it's most accurate to simply
+## find the summary values for those GPAs submitted on a 4.0 scale (ignoring, then, the 45 values which are
+## outside of this scale).
+
+corrected.hsgpa.admits<-oldData[oldData$hsgpa<=4.0 & !is.na(oldData$hsgpa),]
+corrected.hsgpa.deposits<-oldData[oldData$outcome==1 & !is.na(oldData$hsgpa) & oldData$hsgpa<=4.0,]
+mean(corrected.hsgpa.admits$hsgpa)
+median(corrected.hsgpa.admits$hsgpa)
+sd(corrected.hsgpa.admits$hsgpa)
+mean(corrected.hsgpa.deposits$hsgpa)
+median(corrected.hsgpa.deposits$hsgpa)
+sd(corrected.hsgpa.deposits$hsgpa)
+
 ## ----------------------------------------------------------------------
-## Of 913 admitted students, 534 submitted high school GPAs for review.
-## The mean GPA was 3.65, with a median of 3.7 and a standard deviation of 0.385
-## 379 students did not submit GPAs for review. Thus, approximately 58% of our
-## admitted students submitted GPAs and 42% did not.
-## 158 of the 292 depositing students submitted GPAs, comprising 54% of total deposits.
-## 46% of depositing students did not. Thus, roughly 30% of students that submit GPAs
-## deposit (158/534). 35% of students that do not submit GPAs and are admitted deposit (134/379)
+## Of 1010 admitted students, 588 submitted high school GPAs for review.
+## The mean GPA of those submitted on a 4.0 scale was 3.59, with a median of 3.66 and a standard deviation of 0.329.
+## 422 students did not submit GPAs for review. Thus, approximately 58.22% of our
+## admitted students submitted GPAs and 41.78% did not.
+## 198 of the 358 depositing students submitted GPAs, comprising 55.3% of total deposits.
+## The mean GPA (4.0 scale) of depositing students was also 3.59, with a median of 3.7 and a standard deviation of 0.324.
+## 44.7% of depositing students did not. Thus, roughly 33.7% of students that submit GPAs
+## deposit (198/588). Students that do not submit GPAs have a deposit rate of 37.9% (160/422)
 ## ----------------------------------------------------------------------
 
 
