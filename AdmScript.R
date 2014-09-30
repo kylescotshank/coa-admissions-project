@@ -62,7 +62,7 @@ oldData<-read.csv("C:/Users/Kyle Shank/Desktop/SCHOOL/COA/ECONOMETRICS/github pr
 ## ----------------------------------------------------------------------
 ## ----------------------------------------------------------------------
 #------------------------
-# Summary Statistics
+# Descriptive Statistics
 #------------------------
 ## ----------------------------------------------------------------------
 ## ----------------------------------------------------------------------
@@ -535,6 +535,32 @@ just.intl.arank<-oldData[oldData$intl==1,]
 summary(just.intl.arank$a_rank)
 just.intl.arank.deposits<-oldData[oldData$intl==1 & oldData$outcome==1,]
 summary(just.intl.arank.deposits$a_rank)
+
+hsgpa.arank.admits<-oldData[!is.na(oldData$hsgpa),]
+summary(hsgpa.arank.admits$a_rank)
+sd(hsgpa.arank.admits$a_rank)
+hsgpa.arank.deposits<-oldData[!is.na(oldData$hsgpa) & oldData$outcome==1,]
+summary(hsgpa.arank.deposits$a_rank)
+sd(hsgpa.arank.deposits$a_rank)
+no.hsgpa.arank.admits<-oldData[is.na(oldData$hsgpa),]
+summary(no.hsgpa.arank.admits$a_rank)
+sd(no.hsgpa.arank.admits$a_rank)
+no.hsgpa.arank.deposits<-oldData[is.na(oldData$hsgpa) & oldData$outcome==1,]
+summary(no.hsgpa.arank.deposits$a_rank)
+sd(no.hsgpa.arank.deposits$a_rank)
+
+sat.arank.admits<-oldData[!is.na(oldData$sat),]
+summary(sat.arank.admits$a_rank)
+sd(sat.arank.admits$a_rank)
+sat.arank.deposits<-oldData[!is.na(oldData$sat) & oldData$outcome==1,]
+summary(sat.arank.deposits$a_rank)
+sd(sat.arank.deposits$a_rank)
+no.sat.arank.admits<-oldData[is.na(oldData$sat),]
+summary(no.sat.arank.admits$a_rank)
+sd(no.sat.arank.admits$a_rank)
+no.sat.arank.deposits<-oldData[is.na(oldData$sat) & oldData$outcome==1,]
+summary(no.sat.arank.deposits$a_rank)
+sd(no.sat.arank.deposits$a_rank)
 ## ----------------------------------------------------------------------
 ## Of 1010 admitted students, the mean a_rank score was 2.714, with the median of 3 and standard deviation of 0.819
 ## Of 358 depositing students, the mean a_rank score was 2.832, with a median of 3 and standard deviation of 0.816
@@ -552,7 +578,15 @@ summary(just.intl.arank.deposits$a_rank)
 ## Of 176 admitted transfer students, the mean a_rank was 2.807, with a median of 3 and a standard deviation of 0.798
 ## Of 99 depositing transfer students, the mean a_rank was 2.869, with a median of 3 and a standard deviation of 0.829
 ## Of 101 admitted international students, the mean a_rank was 2.545 with a median of 2 and a standard deviation of 0.794
-## of 42 depositing international students, the mean a_rank was 2.643 with a median of 2.5 and a standard deviation of 0.727
+## Of 42 depositing international students, the mean a_rank was 2.643 with a median of 2.5 and a standard deviation of 0.727
+## Of 588 admitted students that submitted HS GPAs, the mean a_rank was 2.716 with a median of 3 and a standard deviation of 0.821
+## Of 198 depositing students that submitted HS GPAs, the mean a_rank was 2.813 with a median of 3 and a standard deviation of 0.794
+## Of 422 admitted students that did not submit HS GPAs, the mean a_rank was 2.711 with a median of 3 and a standard deviation of 0.82
+## Of 160 depositing students that did not submit HS GPAs, the mean a_rank was 2.856 with a median of 3 and a standard deviation of 0.846
+## Of 524 admitted students that submitted SAT scores, the mean a_rank was 2.567 with a median of 3 and a standard deviation of 0.802
+## Of 150 depositing students that submitted SAT scores, the mean a_rank was 2.653 with a median of 3 and a standard deviation of 0.794
+## Of 486 admitted students that did not submit SAT scores, the mean a_rank was 2.872 with a median of 3 and a standard deviation of 0.81
+## Of 208 depositing studnets that did not submit SAT scores, the mean a_rank was 2.962 with a median of 3 and a standard deviation of 0.81
 #------------------------
 # Run Regression / Summary
 #------------------------
