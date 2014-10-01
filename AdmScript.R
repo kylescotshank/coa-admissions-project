@@ -496,6 +496,146 @@ sd(just.deposits.act$act)
 ## The average ACT score for a depositing student was 28.31, with a median of 29 and a standard deviation of 2.9.
 ## ----------------------------------------------------------------------
 
+summary(oldData$p_rank)
+
+deposit.prank<-oldData[oldData$outcome==1,]
+summary(deposit.prank$p_rank)
+sd(deposit.prank$p_rank)
+
+just.female.prank<-oldData[oldData$female==1,]
+summary(just.female.prank$p_rank)
+sd(just.female.prank$p_rank)
+just.female.deposit.prank<-oldData[oldData$female==1 & oldData$outcome==1,]
+summary(just.female.deposit.prank$p_rank)
+sd(just.female.deposit.prank$p_rank)
+
+just.male.prank<-oldData[oldData$female==0,]
+summary(just.male.prank$p_rank)
+sd(just.male.prank$p_rank)
+just.male.deposit.prank<-oldData[oldData$female==0 & oldData$outcome==1,]
+summary(just.male.deposit.prank$p_rank)
+sd(just.male.deposit.prank$p_rank)
+
+just.white.prank<-oldData[oldData$white==1,]
+summary(just.white.prank$p_rank, na.rm=TRUE)
+sd(just.white.prank$p_rank, na.rm=T)
+just.white.prank.deposits<-oldData[oldData$white==1 & oldData$outcome==1,]
+summary(just.white.prank.deposits$p_rank, na.rm=TRUE)
+sd(just.white.prank.deposits$p_rank, na.rm=T)
+
+just.notwhite.prank<-oldData[oldData$white==0,]
+summary(just.notwhite.prank$p_rank)
+sd(just.notwhite.prank$p_rank, na.rm=T)
+just.notwhite.prank.deposits<-oldData[oldData$white==0 & oldData$outcome==0,]
+summary(just.notwhite.prank.deposits$p_rank)
+sd(just.notwhite.prank.deposits$p_rank, na.rm=T)
+
+just.freshman.prank<-oldData[oldData$freshman==1,]
+summary(just.freshman.prank$p_rank)
+sd(just.freshman.prank$p_rank)
+just.freshman.prank.deposits<-oldData[oldData$freshman==1 & oldData$outcome==1,]
+summary(just.freshman.prank.deposits$p_rank)
+sd(just.freshman.prank.deposits$p_rank)
+
+just.transfer.prank<-oldData[oldData$freshman==0,]
+summary(just.transfer.prank$p_rank)
+sd(just.transfer.prank$p_rank)
+just.transfer.prank.deposits<-oldData[oldData$freshman==0 & oldData$outcome==1,]
+summary(just.transfer.prank.deposits$p_rank)
+sd(just.transfer.prank.deposits$p_rank)
+
+just.intl.prank<-oldData[oldData$intl==1,]
+summary(just.intl.prank$p_rank)
+sd(just.intl.prank$p_rank)
+just.intl.prank.deposits<-oldData[oldData$intl==1 & oldData$outcome==1,]
+summary(just.intl.prank.deposits$p_rank)
+sd(just.intl.prank.deposits$p_rank)
+
+hsgpa.prank.admits<-oldData[!is.na(oldData$hsgpa),]
+summary(hsgpa.prank.admits$p_rank)
+sd(hsgpa.prank.admits$p_rank)
+hsgpa.prank.deposits<-oldData[!is.na(oldData$hsgpa) & oldData$outcome==1,]
+summary(hsgpa.prank.deposits$p_rank)
+sd(hsgpa.prank.deposits$p_rank)
+no.hsgpa.prank.admits<-oldData[is.na(oldData$hsgpa),]
+summary(no.hsgpa.prank.admits$p_rank)
+sd(no.hsgpa.prank.admits$p_rank)
+no.hsgpa.prank.deposits<-oldData[is.na(oldData$hsgpa) & oldData$outcome==1,]
+summary(no.hsgpa.prank.deposits$p_rank)
+sd(no.hsgpa.prank.deposits$p_rank)
+
+sat.prank.admits<-oldData[!is.na(oldData$sat),]
+summary(sat.prank.admits$p_rank)
+sd(sat.prank.admits$p_rank)
+sat.prank.deposits<-oldData[!is.na(oldData$sat) & oldData$outcome==1,]
+summary(sat.prank.deposits$p_rank)
+sd(sat.prank.deposits$p_rank)
+no.sat.prank.admits<-oldData[is.na(oldData$sat),]
+summary(no.sat.prank.admits$p_rank)
+sd(no.sat.prank.admits$p_rank)
+no.sat.prank.deposits<-oldData[is.na(oldData$sat) & oldData$outcome==1,]
+summary(no.sat.prank.deposits$p_rank)
+sd(no.sat.prank.deposits$p_rank)
+
+act.prank.admits<-oldData[!is.na(oldData$act),]
+summary(act.prank.admits$p_rank)
+sd(act.prank.admits$p_rank)
+act.prank.deposits<-oldData[!is.na(oldData$act) & oldData$outcome==1,]
+summary(act.prank.deposits$p_rank)
+sd(act.prank.deposits$p_rank)
+no.act.prank.admits<-oldData[is.na(oldData$act),]
+summary(no.act.prank.admits$p_rank)
+sd(no.act.prank.admits$p_rank)
+no.act.prank.deposits<-oldData[is.na(oldData$act) & oldData$outcome==1,]
+summary(no.act.prank.deposits$p_rank)
+sd(no.act.prank.deposits$p_rank)
+
+interview.prank<-oldData[oldData$interview==1,]
+summary(interview.prank$p_rank)
+sd(interview.prank$p_rank)
+interview.prank.deposits<-oldData[oldData$interview==1 & oldData$outcome==1,]
+summary(interview.prank.deposits$p_rank)
+sd(interview.prank.deposits$p_rank)
+no.interview.prank<-oldData[oldData$interview==0,]
+summary(no.interview.prank$p_rank)
+sd(no.interview.prank$p_rank)
+no.interview.prank.deposits<-oldData[oldData$interview==0 & oldData$outcome==1,]
+summary(no.interview.prank.deposits$p_rank)
+sd(no.interview.prank.deposits$p_rank)
+
+## ----------------------------------------------------------------------
+## Of 1010 admitted students, the mean p_rank score was 2.525, with the median of 3 and standard deviation of 0.654
+## Of 358 depositing students, the mean p_rank score was 2.489, with a median of 2 and standard deviation of 0.634
+## Of 702 female admitted students, the mean p_rank score was 2.491, with a median of 3 and standard deviation of 0.631
+## Of 246 female depositing students, the mean p_rank score was 2.484, with a median of 3 and standard deviation of 0.617
+## Of 208 male admitted students, the  mean p_rank was 2.568, with a median of 3 and a standard deviation of 0.703 
+## Of 112 male depositing students, the mean p_rank was 2.5, with a median of 2 and a standard deviation of 0.671
+## Of 876 white admitted students, the mean p_rank was 2.518, with a median of 3 and a standard deviation of 0.646
+## Of 311 white depositing students, the mean p_rank was 2.464, with a median of 2 and a standard deviation of 0.645
+## Of 227 non-white admitted students, the mean p_rank was 2.507, with a median of 3 and a standard deviation of 0.68
+## Of 208 non-white depositing students, the mean p_rank was 2.46, with a median of 3 and a standard deviation of 0.712
+## Of 834 admitted freshman students, the mean p_rank was 2.5, with a median of 3 and a standard deviation of 0.656
+## Of 259 depositing freshman students, the mean p_rank was 2.467, with a median of 2 and a standard deviation of 0.642
+## Of 176 admitted transfer students, the mean p_rank was 2.591, with a median of 3 and a standard deviation of 0.644
+## Of 99 depositing transfer students, the mean p_rank was 2.545, with a median of 3 and a standard deviation of 0.611
+## Of 101 admitted international students, the mean p_rank was 2.356 with a median of 2 and a standard deviation of 0.61
+## Of 42 depositing international students, the mean p_rank was 2.357 with a median of 2 and a standard deviation of 0.533
+## Of 588 admitted students that submitted HS GPAs, the mean p_rank was 2.524 with a median of 3 and a standard deviation of 0.643
+## Of 198 depositing students that submitted HS GPAs, the mean p_rank was 2.5 with a median of 3 and a standard deviation of 0.627
+## Of 422 admitted students that did not submit HS GPAs, the mean p_rank was 2.502 with a median of 3 and a standard deviation of 0.671
+## Of 160 depositing students that did not submit HS GPAs, the mean p_rank was 2.475 with a median of 2 and a standard deviation of 0.644
+## Of 524 admitted students that submitted SAT scores, the mean p_rank was 2.544 with a median of 3 and a standard deviation of 0.666
+## Of 150 depositing students that submitted SAT scores, the mean p_rank was 2.547 with a median of 3 and a standard deviation of 0.651
+## Of 486 admitted students that did not submit SAT scores, the mean p_rank was 2.484 with a median of 3 and a standard deviation of 0.641
+## Of 208 depositing studnets that did not submit SAT scores, the mean p_rank was 2.447 with a median of 3 and a standard deviation of 0.619
+## Of 202 admitted students that submitted ACT scores, the mean p_rank was 2.416 with a median of 2 and a standard deviation of 0.7
+## Of 64 depositing students that submitted ACT scores, the mean p_rank was 2.438 with a median of 2 and a standard deviation of 0.64
+## Of 319 admitted students that had interviews, the mean p_rank was 2.357 with a median of 2 and a standard deviation of 0.681
+## Of 182 depositing students that had interviews, the mean p_rank was 2.412 with a median of 2 and a standard deviation of 0.665
+## Of 691 admitted students that did not have interviews, the mean p_rank was 2.588 wih a median of 3 and a standard deviation of 0.63
+## Of 176 depositing students that did not have interviews, the mean p_rank was 2.568 with a median of 3 and a standard deviation of 0.59
+## ----------------------------------------------------------------------
+
 summary(oldData$a_rank)
 
 deposit.arank<-oldData[oldData$outcome==1,]
@@ -561,6 +701,33 @@ sd(no.sat.arank.admits$a_rank)
 no.sat.arank.deposits<-oldData[is.na(oldData$sat) & oldData$outcome==1,]
 summary(no.sat.arank.deposits$a_rank)
 sd(no.sat.arank.deposits$a_rank)
+
+act.arank.admits<-oldData[!is.na(oldData$act),]
+summary(act.arank.admits$a_rank)
+sd(act.arank.admits$a_rank)
+act.arank.deposits<-oldData[!is.na(oldData$act) & oldData$outcome==1,]
+summary(act.arank.deposits$a_rank)
+sd(act.arank.deposits$a_rank)
+no.act.arank.admits<-oldData[is.na(oldData$act),]
+summary(no.act.arank.admits$a_rank)
+sd(no.act.arank.admits$a_rank)
+no.act.arank.deposits<-oldData[is.na(oldData$act) & oldData$outcome==1,]
+summary(no.act.arank.deposits$a_rank)
+sd(no.act.arank.deposits$a_rank)
+
+interview.arank<-oldData[oldData$interview==1,]
+summary(interview.arank$a_rank)
+sd(interview.arank$a_rank)
+interview.arank.deposits<-oldData[oldData$interview==1 & oldData$outcome==1,]
+summary(interview.arank.deposits$a_rank)
+sd(interview.arank.deposits$a_rank)
+no.interview.arank<-oldData[oldData$interview==0,]
+summary(no.interview.arank$a_rank)
+sd(no.interview.arank$a_rank)
+no.interview.arank.deposits<-oldData[oldData$interview==0 & oldData$outcome==1,]
+summary(no.interview.arank.deposits$a_rank)
+sd(no.interview.arank.deposits$a_rank)
+
 ## ----------------------------------------------------------------------
 ## Of 1010 admitted students, the mean a_rank score was 2.714, with the median of 3 and standard deviation of 0.819
 ## Of 358 depositing students, the mean a_rank score was 2.832, with a median of 3 and standard deviation of 0.816
@@ -587,6 +754,62 @@ sd(no.sat.arank.deposits$a_rank)
 ## Of 150 depositing students that submitted SAT scores, the mean a_rank was 2.653 with a median of 3 and a standard deviation of 0.794
 ## Of 486 admitted students that did not submit SAT scores, the mean a_rank was 2.872 with a median of 3 and a standard deviation of 0.81
 ## Of 208 depositing studnets that did not submit SAT scores, the mean a_rank was 2.962 with a median of 3 and a standard deviation of 0.81
+## Of 202 admitted students that submitted ACT scores, the mean a_rank was 2.515 with a median of 2 and a standard deviation of 0.83
+## Of 64 depositing students that submitted ACT scores, the mean a_rank was 2.547 with a median of 3 and a standard deviation of 0.733
+## Of 319 admitted students that had interviews, the mean a_rank was 2.671 with a median of 3 and a standard deviation of 0.794
+## Of 182 depositing students that had interviews, the mean a_rank was 2.819 with a median of 3 and a standard deviation of 0.762
+## Of 691 admitted students that did not have interviews, the mean a_rank was 2.734 wih a median of 3 and a standard deviation of 0.831
+## Of 176 depositing students that did not have interviews, the mean a_rank was 2.847 with a median of 3 and a standard deviation of 0.871
+## ----------------------------------------------------------------------
+
+interview.admits<-sum(oldData$interview==1)
+interview.deposits<-sum(oldData$interview==1 & oldData$outcome==1)
+percent.interview.admits<-interview.admits/total.admits
+percent.interview.deposits<-interview.deposits/total.deposits
+interview.deposit.rate<-interview.deposits/interview.admits
+interview.admits
+interview.deposits
+percent.interview.admits
+percent.interview.deposits
+interview.deposit.rate
+
+
+## ----------------------------------------------------------------------
+## Of 1010 admitted students, 319 of these has interviews, comprising 31.58% of the admitted
+## student population.
+## Of the 358 depositing students, 182 had interviews, comprising 50.84% of the depositing student population.
+## Students that interviewed had a deposit rate of 57.05%. 
+## ----------------------------------------------------------------------
+
+summary(oldData$award)
+sd(oldData$award)
+deposit.awards<-oldData[oldData$outcome==1,]
+summary(deposit.awards$award)
+sd(deposit.awards$award)
+length(which(oldData$award>=27440))
+length(which(deposit.awards$award>=30000))
+length(which(oldData$award==0 & oldData$outcome==1))
+no.award.admit<-oldData[oldData$award==0,]
+no.award.deposit<-oldData[oldData$award==0 & oldData$outcome==1,]
+
+
+## ----------------------------------------------------------------------
+## The minimum award package for admitted students was was $0. This award was given to 221 admitted students, 
+## comprising approximately 21.88% of admitted students. 
+## The minimum award package for depositing students was $0. This award was given to 49 depositing students, 
+## comprising 13.69% of depositing students.
+## The maximum award for admitted students was $38,390. The third quartile award was $27,440. 253 admitted students
+## were offered awards greater than or equal to this amount, comprising approximately 25% of admitted student awards.
+## The maximum award for depositing students was $36,590. The third quartile award was $30,000. 104 depositing students
+## were offered awards greater than or equal to this amount, comprising 29% of the depositing student population.
+## The mean award for admitted students was $16,140, the median $15,980, with a standard deviation of $12,506.07
+## The mean award for depositing students was $20,820, the median $24,490, with a standard deviation of $11,857.65
+## Thus, the mean award for depositing students is approximately 29% higher than the award for admitted students,
+## with the median award for depositing students being 53% higher than the award for admitted students. 
+## If we remove all of the $0 awards, the mean award amount becomes $20,660, the median $23,000, with the standard
+## deviation being $10,334.15
+## ----------------------------------------------------------------------
+
 #------------------------
 # Run Regression / Summary
 #------------------------
