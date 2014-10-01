@@ -810,6 +810,25 @@ no.award.deposit<-oldData[oldData$award==0 & oldData$outcome==1,]
 ## deviation being $10,334.15
 ## ----------------------------------------------------------------------
 
+## ----------------------------------------------------------------------
+## ----------------------------------------------------------------------
+#------------------------
+# Correlations
+#------------------------
+## ----------------------------------------------------------------------
+## ----------------------------------------------------------------------
+
+cor(oldData$outcome,oldData$freshman)
+## ----------------------------------------------------------------------
+## Negative correlation coefficient of -0.1998. Outcome 
+## We note that this is the correlation between two binary variables, thus cor() is providing the phi coefficient,
+## which is just a special case of the normal Pearson correlation called by cor(). 
+## Also, note: we are comparing a binary variable with a continuous variable, which
+## requires us to use a point-serial correlation. However, this is just a special case of the
+## normal Pearson correlation called by cor(). 
+## ----------------------------------------------------------------------
+cor(oldData, use="pairwise.complete.obs", method="pearson")
+
 #------------------------
 # Run Regression / Summary
 #------------------------
