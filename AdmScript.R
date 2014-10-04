@@ -817,14 +817,27 @@ no.award.deposit<-oldData[oldData$award==0 & oldData$outcome==1,]
 #------------------------
 ## ----------------------------------------------------------------------
 ## ----------------------------------------------------------------------
-cor(oldData, use="pairwise.complete.obs", method="pearson")
+correlationMatrix<-cor(oldData, use="pairwise.complete.obs", method="pearson")
+correlationMatrix<-as.data.frame(correlationMatrix)
 ## ----------------------------------------------------------------------
-## Computer correlation matrix between all variables. Note: the error message
-## "Warning message:
+## Computes a matrix of correlation coefficients between all variables. 
+## Note: the error message "Warning message:
 ##  In cor(oldData, use = "pairwise.complete.obs", method = "pearson") :
 ##   the standard deviation is zero"
 ## Stems from the relationship between "hsrank" and "intl", as no international students
 ## submitted high school rankings. 
+##
+## Only correlationc coefficients >=|0.3| are discussed. 
+## The strongest correlations for "outcome" are for "ed" (0.388) and "interview" (0.307). Both are weakly positive.
+## The strongest correlation for "freshman" is "age" (-0.467). This is weakly negative.
+## The strongest correlation for "white" is "intl" (-0.346). This is weakly negative.
+## The strongest correlation for "hsgpa" is "act" (0.418). This is weakly positive. 
+## The strongest correlations for "hsrank" are "sat" (0.4), "act" (0.564), and "a_rank" (-0.583). "sat" is weakly positive.
+## "act" is moderatley positive. "a_rank" is moderately negative. 
+## The strongest correlation for "sat" is "act" (0.805). This is strongly positive.
+## The strongest correlations for "a_rank" are "hsrank" (-0.583), "sat" (-0.545), "act" (-0.532), and "p_rank" (0.375)
+## The first three are moderately negative. "p_rank" is weakly positive. 
+## The strongest correlation for "interview" is "outcome" (0.307). This is weakly positive.
 ## ----------------------------------------------------------------------
 
 
