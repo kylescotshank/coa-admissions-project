@@ -53,9 +53,9 @@
 # Preamble
 ## ----------------------------------------------------------------------
 
-library(car)
 library(aod)
 library(plyr)
+library(ggplot2)
 
 oldData<-read.csv("C:/Users/Kyle Shank/Desktop/SCHOOL/COA/ECONOMETRICS/github project/coa_admit_data_with_ed.csv")
 
@@ -109,13 +109,15 @@ ed.deposit.rate
 ## This reinforces the commonsense notion that ED students are highly sensitive to aid amounts
 ## ----------------------------------------------------------------------
 
-mean(oldData$age)
-median(oldData$age)
-sd(oldData$age)
+correct.age<-oldData[-628,]
+mean(correct.age$age)
+median(correct.age$age)
+sd(correct.age$age)
 
 ## ----------------------------------------------------------------------
-## the average applicant was approximately 19 years old (mean 18.85 / median 18), with a standard
-## deviation of 2.24 years
+## One student (id# 216822, [628,]) has an incorrect data entry for age, who is therefore supressed for the age
+## calculation. The average applicant was approximately 19 years old (mean 18.87 / median 18), with a standard
+## deviation of 2.16 years.
 ## ----------------------------------------------------------------------
 
 freshman.admits<-sum(oldData$freshman==1)
@@ -817,8 +819,8 @@ no.award.deposit<-oldData[oldData$award==0 & oldData$outcome==1,]
 #------------------------
 ## ----------------------------------------------------------------------
 ## ----------------------------------------------------------------------
-correlationMatrix<-cor(oldData, use="pairwise.complete.obs", method="pearson")
-correlationMatrix<-as.data.frame(correlationMatrix)
+corMat<-cor(oldData, use="pairwise.complete.obs", method="pearson")
+corMat
 ## ----------------------------------------------------------------------
 ## Computes a matrix of correlation coefficients between all variables. 
 ## Note: the error message "Warning message:
@@ -841,11 +843,28 @@ correlationMatrix<-as.data.frame(correlationMatrix)
 ## ----------------------------------------------------------------------
 
 
+## ----------------------------------------------------------------------
+## ----------------------------------------------------------------------
 #------------------------
-# Run Regression / Summary
+# Regression
 #------------------------
+## ----------------------------------------------------------------------
+## ----------------------------------------------------------------------
 
-glm.out<-glm(outcome ~ freshman+age+female+a_rank+p_rank+
+## ----------------------------------------------------------------------
+## We want to analyze the choice that admitted students make at College of the Atlantic when they choose to
+## either deposit or not deposit with the institution. To do so, we will utilize a binomial logit model with a
+## dichotomous dependent variable ("outcome") and both continuous and dichotomous independent variables.
+## 
+## The general form of binomial logits is as such:
+## 
+## D_i = (1)/(1+EXP(-[B_0 + B_1*X_1i + B_2*X_2i ... B_N*X_Ni + e_i]))
+##
+## This model is useful as it provides both an upper (1) and lower (0) bound to our estimate D_i. 
+## The glm() algorithm used by R will compute this regression using MLE methods. The outcome of the glm()
+## model will provide us with "log of the odds
+
+logit.output<-glm(outcome ~ freshman+age+female+a_rank+p_rank+
                white+int+log(coaaid),
            family= binomial(logit),data = OldData)
 summary(glm.out)
