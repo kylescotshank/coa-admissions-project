@@ -104,8 +104,8 @@ ed.deposit.rate
 ## Interesting finding (from above): of our ED admits, the mean and median COA award for
 ## those that deposited was $19,199 and $22,750, respectively. (st. div = 11,781.15)
 ## For those that did not deposit, these values are $2,860 and 0, respectively. (st.div = 7567.98)
-## of the 7 ED admits that did not deposit, six were given award amounts of 0. This
-## particular admitted student, id# 132035, was also an international student. 
+## of the 7 ED admits that did not deposit, six were given award amounts of 0. The student 
+## which did receive an award ($20,023), and not deposit, id# 132035 [26,], was incidentally an international student. 
 ## This reinforces the commonsense notion that ED students are highly sensitive to aid amounts
 ## ----------------------------------------------------------------------
 
@@ -861,13 +861,13 @@ corMat
 ## D_i = (1)/(1+EXP(-[B_0 + B_1*X_1i + B_2*X_2i ... B_N*X_Ni + e_i]))
 ##
 ## This model is useful as it provides both an upper (1) and lower (0) bound to our estimate D_i. 
-## The glm() algorithm used by R will compute this regression using MLE methods. The outcome of the glm()
-## model will provide us with "log of the odds
+## The glm() algorithm used by R will compute this regression using MLE methods. 
+## ----------------------------------------------------------------------
 
-logit.output<-glm(outcome ~ freshman+age+female+a_rank+p_rank+
-               white+int+log(coaaid),
-           family= binomial(logit),data = OldData)
-summary(glm.out)
+logit.output<-glm(outcome ~ freshman + ed + age + female +
+               white + newengland + intl + married,
+           family= binomial(logit),data = oldData)
+summary(logit.output)
 
 # CI using profiled log-likelihood
 confint(glm.out)
