@@ -54,7 +54,7 @@
 ## ----------------------------------------------------------------------
 
 library(aod)
-library(plyr)
+library(MASS)
 library(ggplot2)
 
 oldData<-read.csv("C:/Users/Kyle Shank/Desktop/SCHOOL/COA/ECONOMETRICS/github project/coa_admit_data_with_ed.csv")
@@ -868,8 +868,7 @@ corMat
 ## The glm() algorithm used by R will compute this regression using MLE methods. 
 ##
 ## After several exploratory regression, a new dataframe has been constructed below upon which to test
-## our logistic regression. Note: the variables "newengland" and "married" have been removed as they
-## have not shown to be statistically significant across several different model iterations.
+## our logistic regression. 
 ##
 ## oldData.reg<-oldData
 ## oldData.reg[628,]$age<-NA
@@ -883,29 +882,62 @@ corMat
 ## oldData.reg<-subset(oldData.reg,select=-sat,-act)
 ## ----------------------------------------------------------------------
 
-logit.output<-glm(outcome ~ freshman + ed + age  + intl + female + white +
+logit.output<-glm(outcome ~ freshman + ed + age + female + white + newengland + intl + married + 
                      a_rank + p_rank + interview + award + hs_dummy + test_dummy,
-           family= binomial(logit),data = oldData.reg)
+           family= binomial(logit),data = na.omit(oldData.reg))
 summary(logit.output)
 
-# CI using profiled log-likelihood
-confint(glm.out)
-# CI using standard errors
-confint.default(glm.out)
-# wald test
-# wald.test(b = coef(glm.out), Sigma = vcov(glm.out), Terms = 4:6)
-#
-#odds ratios and 95% CI
-exp(cbind(OR = coef(glm.out), confint(glm.out)))
 
-# model fit testing
-# The difference in deviance between the two models
-with(glm.out, null.deviance - deviance)
-#The number of predictor variables in the model
-with(glm.out, df.null - df.residual)
-#And thus the p-value is 
-with(glm.out, pchisq(null.deviance - deviance, df.null - df.residual, lower.tail = FALSE))
+## ----------------------------------------------------------------------
+## In this regression model, "freshman","ed","age","a_rank","interview","award", and "hs_dummy" are statistically significant
+## at a p-level of 0.05. 
+##
+## Thus, our model becomes:
+## Ln(Pr(Outcome=1)) = -8.502 + -1.348(freshman) + 3.87(ed) + 0.309(age) + 0.193(female) + 0.241(white) + 0.07(newengland)
+## + 0.395(intl) - 0.24(married) + 0.386(a_rank) - 0.131(p_rank) + 1.04(interview) + 7.61*10^{-5}(award) + 0.467(hs_dummy)
+## + 0.056(test_dummy)
+## ----------------------------------------------------------------------
 
+
+exp(cbind(OR=coef(logit.output),confint.default(logit.output)))
+## ----------------------------------------------------------------------
+## This computes the odds ratios and confidence intervals utilizing standard errors
+## For example, we can see from this model specification that being an early decision applicant ("ed"=1)
+## means that an admitted student is roughly 48 times more likely to deposit than a student that is not early decision.
+## EXP(3.873*(1-0)) = 48.08. We also see that international students ("intl"=1) are about 1.5 times as likely
+## to deposit as non-international students, as are students that submit high school rankings/gpas. 
+##
+## Going further: a 25 year old student is 8.7 times more likely to deposit than an 18 year old.
+## (EXP(B_"age"*(x_i - x_j)) = exp(0.309*(25-18))
+## 
+## Or, perhaps more interestingly:
+## A student awarded an a_rank of "5" is 4.5 times more likely to deposit than an a_rank of "1". 
+## exp(0.386*(5-1)) = 4.68
+## ----------------------------------------------------------------------
+
+
+anova(logit.output,test="Chisq")
+stepAIC(logit.output)
+## ----------------------------------------------------------------------
+## We want to test model fit. To test model fit on logit models, we want to minimize both deviance and 
+## the Aikake information critera (AIC). Note: AIC tells us nothing about how our model compares to a null
+## model in the absolute sense. Given a set of candidate models for the data, the preferred model is the 
+## one with the minimum AIC value. Hence AIC not only rewards goodness of fit, but also includes a penalty 
+## that is an increasing function of the number of estimated parameters. 
+## This penalty discourages overfitting (increasing the number of parameters in the model almost always improves the goodness of the fit).
+##
+## To do this, we will utilize the stepAIC() function from the MASS library, which will systematically
+## work through each independent variable to find which model specification minimizes the deviance and AIC.
+##
+## Thus, our "optimized" regression equation is:
+## Outcome_i = -8.354 - 1.314(freshman) + 3.917(ed) + + 0.3039(age) + 0.347(a_rank) + 1.041(interview) + 
+## 7.6868e-05(award) + 0.4023(hs_dummy). We will call this new regression bestfit.logit.output
+## ----------------------------------------------------------------------
+
+bestfit.logit.output<-glm(outcome ~ freshman + ed + age +  a_rank  + interview + award + hs_dummy ,
+                  family= binomial(logit),data = na.omit(oldData.reg))
+summary(bestfit.logit.output)
+exp(cbind(OR=coef(bestfit.logit.output),confint.default(bestfit.logit.output)))
 
 #------------------------
 # PREDICTIVE ACCURACY TESTS
