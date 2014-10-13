@@ -282,8 +282,8 @@ intl.deposit.rate
 ## ----------------------------------------------------------------------
 ## Of the 1010 admitted students, 101 of the admitted students were international students.
 ## Therefore, 10% of the admitted students were international student.
-## Of 358 deposits, 42 were international students, giving us a deposit ratio
-## of 11.73%. We therefore have a deposit ratio of 41.58% (42 deposits / 101 admitted).
+## Of 358 deposits, 42 were international students, accounting for 
+## of 11.73% of depositing students. We therefore have a deposit ratio of 41.58% (42 deposits / 101 admitted).
 ##
 ## just.intl<- oldData[oldData$intl==1 & oldData$outcome==1,]
 ## just.intl.nr<-oldData[oldData$intl==1 & oldData$outcome==0,]
@@ -859,14 +859,33 @@ corMat
 ## The general form of binomial logits is as such:
 ## 
 ## D_i = (1)/(1+EXP(-[B_0 + B_1*X_1i + B_2*X_2i ... B_N*X_Ni + e_i]))
+## or
+## ln(D_i/(1-D_i)) = B_0 + B_1*X_1i + B_2*X_2i ... B_N*X_Ni + e_i
 ##
-## This model is useful as it provides both an upper (1) and lower (0) bound to our estimate D_i. 
+## where ln(D_i/(1-D_i)) = the "log odds", or ln(Pr(D_i = 1))
+##
+## This model is useful as it provides both an upper (1) and lower (0) bound to our estimated D_i. 
 ## The glm() algorithm used by R will compute this regression using MLE methods. 
+##
+## After several exploratory regression, a new dataframe has been constructed below upon which to test
+## our logistic regression. Note: the variables "newengland" and "married" have been removed as they
+## have not shown to be statistically significant across several different model iterations.
+##
+## oldData.reg<-oldData
+## oldData.reg[628,]$age<-NA
+## hs_dummy<-as.numeric(oldData$hsgpa>0 & !is.na(oldData$hsgpa) | oldData$hsrank>0 & !is.na(oldData$hsrank))
+## ("hs_dummy" is now just a dichotomous variable representing whether or not an admitted student self-reported high school data.)
+## oldData.reg$hs_dummy<-hs_dummy
+## oldData.reg<-subset(oldData.reg,select=-hsgpa,-hsrank)
+## test_dummy<-as.numeric(oldData$sat>0 & !is.na(oldData$sat) | oldData$act>0 & !is.na(oldData$act))
+## ("test_dummy" is now just a dichotomous variable representing whether or not an admitted student self-reported their standardized test scores.)
+## oldData.reg$test_dummy<-test_dummy
+## oldData.reg<-subset(oldData.reg,select=-sat,-act)
 ## ----------------------------------------------------------------------
 
-logit.output<-glm(outcome ~ freshman + ed + age + female +
-               white + newengland + intl + married,
-           family= binomial(logit),data = oldData)
+logit.output<-glm(outcome ~ freshman + ed + age  + intl + female + white +
+                     a_rank + p_rank + interview + award + hs_dummy + test_dummy,
+           family= binomial(logit),data = oldData.reg)
 summary(logit.output)
 
 # CI using profiled log-likelihood
