@@ -56,6 +56,7 @@
 library(aod)
 library(MASS)
 library(ggplot2)
+library(arm)
 
 oldData<-read.csv("C:/Users/Kyle Shank/Desktop/SCHOOL/COA/ECONOMETRICS/github project/coa_admit_data_with_ed.csv")
 
@@ -939,11 +940,15 @@ bestfit.logit.output<-glm(outcome ~ freshman + ed + age +  a_rank  + interview +
 summary(bestfit.logit.output)
 exp(cbind(OR=coef(bestfit.logit.output),confint.default(bestfit.logit.output)))
 
+## ----------------------------------------------------------------------
+## ----------------------------------------------------------------------
 #------------------------
-# PREDICTIVE ACCURACY TESTS
+# Predictive Accuracy
 #------------------------
-
+## ----------------------------------------------------------------------
+## ----------------------------------------------------------------------
 #----------------------------
+
 # PREDICTIVE WITH CV = 0.5
 #----------------------------
 
