@@ -871,30 +871,36 @@ corMat
 ## After several exploratory regression, a new dataframe has been constructed below upon which to test
 ## our logistic regression. 
 ##
-## oldData.reg<-oldData
-## oldData.reg[628,]$age<-NA
-## hs_dummy<-as.numeric(oldData$hsgpa>0 & !is.na(oldData$hsgpa) | oldData$hsrank>0 & !is.na(oldData$hsrank))
-## ("hs_dummy" is now just a dichotomous variable representing whether or not an admitted student self-reported high school data.)
-## oldData.reg$hs_dummy<-hs_dummy
-## oldData.reg<-subset(oldData.reg,select=-hsgpa,-hsrank)
-## test_dummy<-as.numeric(oldData$sat>0 & !is.na(oldData$sat) | oldData$act>0 & !is.na(oldData$act))
-## ("test_dummy" is now just a dichotomous variable representing whether or not an admitted student self-reported their standardized test scores.)
-## oldData.reg$test_dummy<-test_dummy
-## oldData.reg<-subset(oldData.reg,select=-sat,-act)
+## ----------------------------------------------------------------------
+
+oldData.reg<-oldData
+oldData.reg[628,]$age<-NA
+hs_dummy<-as.numeric(oldData$hsgpa>0 & !is.na(oldData$hsgpa) | oldData$hsrank>0 & !is.na(oldData$hsrank))
+#("hs_dummy" is now just a dichotomous variable representing whether or not an admitted student self-reported high school data.)
+oldData.reg$hs_dummy<-hs_dummy
+oldData.reg<-subset(oldData.reg,select=-hsgpa)
+oldData.reg<-subset(oldData.reg,select=-hsrank)
+test_dummy<-as.numeric(oldData$sat>0 & !is.na(oldData$sat) | oldData$act>0 & !is.na(oldData$act))
+#("test_dummy" is now just a dichotomous variable representing whether or not an admitted student self-reported their standardized test scores.)
+oldData.reg$test_dummy<-test_dummy
+oldData.reg<-subset(oldData.reg,select=-sat)
+oldData.reg<-subset(oldData.reg,select=-act)
+
 ## ----------------------------------------------------------------------
 
 logit.output<-glm(outcome ~ freshman + ed + age + female + white + newengland + intl + married + 
                      a_rank + p_rank + interview + award + hs_dummy + test_dummy,
-           family= binomial(logit),data = na.omit(oldData.reg))
-summary(logit.output)
+           family= binomial(logit),data = na.omit(oldData.reg),maxit=100)
 
+
+summary(logit.output)
 
 ## ----------------------------------------------------------------------
 ## In this regression model, "freshman","ed","age","a_rank","interview","award", and "hs_dummy" are statistically significant
 ## at a p-level of 0.05. 
 ##
 ## Thus, our model becomes:
-## Ln(Pr(Outcome=1)) = -8.502 + -1.348(freshman) + 3.87(ed) + 0.309(age) + 0.193(female) + 0.241(white) + 0.07(newengland)
+## Ln(Pr(Outcome=1)) = -8.502 - 1.348(freshman) + 3.87(ed) + 0.309(age) + 0.193(female) + 0.241(white) + 0.07(newengland)
 ## + 0.395(intl) - 0.24(married) + 0.386(a_rank) - 0.131(p_rank) + 1.04(interview) + 7.61*10^{-5}(award) + 0.467(hs_dummy)
 ## + 0.056(test_dummy)
 ## ----------------------------------------------------------------------
