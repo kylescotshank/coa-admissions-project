@@ -57,6 +57,7 @@ library(aod)
 library(MASS)
 library(ggplot2)
 library(arm)
+library(plyr)
 
 oldData<-read.csv("C:/Users/Kyle Shank/Desktop/SCHOOL/COA/ECONOMETRICS/github project/coa_admit_data_with_ed.csv")
 
@@ -75,7 +76,7 @@ total.admits
 total.deposits
 percent.total.deposits
 ## ----------------------------------------------------------------------
-## Our data set contains 1010 total applicants, of which 358 deposited. 
+## Our data set contains 1010 total admitted students, of which 358 deposited. 
 ## This gives us a net deposit rate of 35.44%. 
 ## ----------------------------------------------------------------------
 
@@ -820,6 +821,7 @@ no.award.deposit<-oldData[oldData$award==0 & oldData$outcome==1,]
 #------------------------
 ## ----------------------------------------------------------------------
 ## ----------------------------------------------------------------------
+
 corMat<-cor(oldData, use="pairwise.complete.obs", method="pearson")
 corMat
 ## ----------------------------------------------------------------------
@@ -890,7 +892,7 @@ oldData.reg<-subset(oldData.reg,select=-act)
 
 logit.output<-glm(outcome ~ freshman + ed + age + female + white + newengland + intl + married + 
                      a_rank + p_rank + interview + award + hs_dummy + test_dummy,
-           family= binomial(logit),data = na.omit(oldData.reg),maxit=100)
+           family= binomial(logit),data = oldData.reg, na.action=na.omit,maxit=100)
 
 
 summary(logit.output)
@@ -900,7 +902,7 @@ summary(logit.output)
 ## at a p-level of 0.05. 
 ##
 ## Thus, our model becomes:
-## Ln(Pr(Outcome=1)) = -8.502 - 1.348(freshman) + 3.87(ed) + 0.309(age) + 0.193(female) + 0.241(white) + 0.07(newengland)
+## Ln(Pr(Outcome=1)) = -8.502 - 1.348(freshman) + 3.873(ed) + 0.309(age) + 0.193(female) + 0.241(white) + 0.07(newengland)
 ## + 0.395(intl) - 0.24(married) + 0.386(a_rank) - 0.131(p_rank) + 1.04(interview) + 7.61*10^{-5}(award) + 0.467(hs_dummy)
 ## + 0.056(test_dummy)
 ## ----------------------------------------------------------------------
@@ -941,10 +943,10 @@ stepAIC(logit.output)
 ## 7.6868e-05(award) + 0.4023(hs_dummy). We will call this new regression bestfit.logit.output
 ## ----------------------------------------------------------------------
 
-bestfit.logit.output<-glm(outcome ~ freshman + ed + age +  a_rank  + interview + award + hs_dummy ,
-                  family= binomial(logit),data = na.omit(oldData.reg))
-summary(bestfit.logit.output)
-exp(cbind(OR=coef(bestfit.logit.output),confint.default(bestfit.logit.output)))
+bestfit.logit<-glm(outcome ~ freshman + ed + age +  a_rank  + interview + award + hs_dummy ,
+                  family= binomial(logit), data = oldData.reg, na.action=na.omit)
+summary(bestfit.logit)
+exp(cbind(OR=coef(bestfit.logit.output),confint.default(bestfit.logit)))
 
 ## ----------------------------------------------------------------------
 ## ----------------------------------------------------------------------
@@ -955,72 +957,50 @@ exp(cbind(OR=coef(bestfit.logit.output),confint.default(bestfit.logit.output)))
 ## ----------------------------------------------------------------------
 #----------------------------
 
-# PREDICTIVE WITH CV = 0.5
-#----------------------------
 
-# Makes a matrix
-ymat<-matrix(numeric(0),ncol=2,nrow=length(OldData$outcome))
-# Puts the Data OUTCOME into column 1
-ymat[,1]<-OldData$outcome
-# Puts the predicted outcomes in column 2
-prediction<-round(predict(glm.out,OldData,type="response"))
-ymat[,2]<-prediction
-# Data Deposit Outcome
-count1<-count(ymat[,1]==1 & ymat[,2]==1)[2,2]
-# Predicted Deposit Outcome
-count0<-count(ymat[,1]==0 & ymat[,2]==0)[2,2]
-# Data Non-Deposit Outcome
-# Accuracy of Yield
-yield.accuracy<-(count1+count0)/length(OldData$outcome)
-# Accuracy of Deposits
-total1<-sum(ymat[,1])
-deposits.accuracy<-count1/total1
-# Accuracy of Non-Deposits
-total0<-count(ymat[,1]==0)[2,2]
-nondeposits.accuracy<-count0/total0
-
-# Accuracy of Yield
-print(yield.accuracy)
-# Accuracy of Deposits
-print(deposits.accuracy)
-# Accuracy of Non-Deposits
-print(nondeposits.accuracy)
+prediction.matrix<-matrix(0,ncol=4,nrow=length(oldData.reg$outcome))
+colnames(prediction.matrix)<-c("id", "outcome", "fitted probability","predicted outcome")
+## Construct a matrix with four columns: "id", "outcome", "fitted probability", and "predictd outcomes"
+prediction.matrix[,1]<-oldData.reg$id
+## Put the ids into column 1
+prediction.matrix[,2]<-oldData.reg$outcome
+## Puts the predicted outcomes in column 2
+fitted.values <- predict(bestfit.logit,oldData.reg,type="response")
+## Creates a vector of fitted values from bestfit.logit
+prediction.matrix[,3]<- fitted.values
+## Puts this vector into column 3
+predicted.outcomes<-ifelse(prediction.matrix[,3]>=0.5,1,0)
+## Creates a vector that rounds the fitted probabilities up or down from 0.5,
+## simluating a positive (1) and negative (0) response
+predicted.outcomes[628]=0
+## Fixes the mistake called by the NA in age in oldData.reg[628]
+prediction.matrix[,4]<-predicted.outcomes
+## Puts this predicted outcomes into column 4
 
 
-#----------------------------------
-# PREDICTIVE WITH CV not equal 0.5
-#----------------------------------
-
-# Makes a matrix
-ymat<-matrix(numeric(0),ncol=2,nrow=length(OldData$outcome))
-# Puts the Data OUTCOME into column 1
-ymat[,1]<-OldData$outcome
-# Puts the predicted outcomes in column 2
-prediction<-predict(glm.out,OldData,type="response")
-ymat[,2]<-prediction
-# resets the predicted outcomes to critical value
-ymat[,2]<-ifelse(ymat[,2]>=0.425,1,0)
-# Data Deposit Outcome
-count1<-count(ymat[,1]==1 & ymat[,2]==1)[2,2]
-# Predicted Deposit Outcome
-count0<-count(ymat[,1]==0 & ymat[,2]==0)[2,2]
-# Data Non-Deposit Outcome
-# Accuracy of Yield
-yield.accuracy<-(count1+count0)/length(OldData$outcome)
-# Accuracy of Deposits
-total1<-sum(ymat[,1])
-deposits.accuracy<-count1/total1
-# Accuracy of Non-Deposits
-total0<-count(ymat[,1]==0)[2,2]
-nondeposits.accuracy<-count0/total0
+true.positives<-count(prediction.matrix[,2]==1 & prediction.matrix[,4]==1)[2,2]
+true.positives
+## True positives where actual outcome matches predicted outcome
+## 205 true positives
+false.positives<-count(prediction.matrix[,2]==0 & prediction.matrix[,4]==1)[2,2]
+false.positives
+## False positives where actual outcomes do not match predicted outcomes
+## 66 false positives
+true.negatives<-count(prediction.matrix[,2]==0 & prediction.matrix[,4]==0)[2,2]
+true.negatives
+## True negatives where actual outcome matches predicted outcome
+## 586 true negatives
+false.negatives<-count(prediction.matrix[,2]==1 & prediction.matrix[,4]==0)[2,2]
+false.negatives
+## 153 false negatives.
 
 
-# Accuracy of Yield
-print(yield.accuracy)
-# Accuracy of Deposits
-print(deposits.accuracy)
-# Accuracy of Non-Deposits
-print(nondeposits.accuracy)
+total.accuracy <- (true.positives+true.negatives)/total.admits
+positive.accuracy <- true.positives/total.deposits
+negative.accuracy <- true.negatives/length(oldData$outcome==0)
+
+
+
 
 #----------------------------------
 # Predict for Future Year
