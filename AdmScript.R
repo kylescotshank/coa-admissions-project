@@ -1,56 +1,62 @@
 ## ----------------------------------------------------------------------
-# Kyle Scot Shank
-# 9/26/2014
-#
-# The purpose of this code is to perform a logistic regression on data
-# obtained from three years worth of records regarding matriculant deposits at College of the Atlantic.
-#
-# We hope to use the admissions records provided from 2011,2012, and 2013 to see what, if any, key variables 
-# may explain the decision to deposit or not deposit. Then, utilizing the estimated coefficients, we will
-# see how the regression equation predicts the outcomes in 2014. All of the individuals recorded
-# in this dataset were admitted to College of the Atlantic. 
-#
-# Since this project is being uploaded to Github and therefore will be in the public domain, all information 
-# containing potentially private information (names, ss number, etc.) have been "scrubbed" from he dataset.
-# Additionally, further privacy was enforced by encoding things such as parental marital status and home state
-# in a binary format (this also allowed for increased ease of stasticial manipulation).
-#
-# Notes on Data Scrubbing:
-#
-# Original dataset contained 1015 unique entries
-# Ages were originally represented as decimals: they've been rounded down to the nearest whole number.
-# 1 entry was removed for suspected data entry errors 
-# 4 entries were removed for data errors with a_rank and p_rank (no rankings entered)
-# 
-#
-# Thus, our final data set contains 1010 unique entries.
-#
-# 
-# Explanation of variables:
-#
-# "id" = unique numeric ID assigned to applicants 
-# "outcome" = binary variable; 1 if the student deposited, 0 if the student did not.
-# "freshman" = binary variable; 1 if the student was a freshman applicants, 0 if not (if the student was labelled a "READMIT", they were assigned a 0)
-# "ed" = binary variable; 1 if the student applied Early Decision (ED1 or ED2), 0 if applied Regular Decision
-# "age" = age of the applicant, computed from data of birth and expected date of entry
-# "female" = binary variable; 1 if the student was female, 0 if male
-# "white" = binary variable; 1 if the student responded to their racial identification question with "White", 0 if any other response (N/A if student did not respond/data error)
-# ("white" was a forced binary: original data contained other optional responses, i.e. "Black", "Asian", etc. Other responses were condensed.)
-# "newengland" = binary variable; 1 if the student was from a New England state (ME, MA, VT, CT, RI, NH), 0 if otherwise (N/A if student did not respond/data error)
-# "intl" = binary variable; 1 if student was an international applicant, 0 otherwise 
-# "married" = binary variable; 1 if student responded to questions regarding parental relationship status with "married", 0 otherwise (N/A if student did not respond/data error).
-# ("married" was a forced binary: original data contained other optional responses, i.e. "Widowed", "Single", etc. Other responses were condensed.)
-# "hsgpa" = student high school gpa at time of graduation, self-reported. (N/A if student did not respond/data error)
-# "hsrank" = student high school ranking, computed from self-reported rank and self-reported student body size. This is a percentile ranking. (N/A if student did not respond/data error)
-# "sat" & "act" = student SAT and ACT scores, self-reported (N/A if student did not respond/data error)
-# "a_rank" & "p_rank" = College of the Atlantic internal grading scheme; a_rank measures academic potential, p_rank measures personality/personal potential. Rank is descending (1-6, 1 the highest, 6 the lower).
-# "interview" = binary variable; 1 if student had an interview with an admissions counselor, 0 otherwise. (Computed from interview score codes; only students with interview scores were counted as having received an interview; scores were repressed and not represented here.)
-# "award" = Reported amount of COA financial aid award. Students with no award listed in master file had variable forced to 0. 
-#
+## Kyle Scot Shank
+## 9/26/2014
+## 
+## The purpose of this code is to perform a logistic regression on data
+## obtained from three years worth of records regarding matriculant deposits at College of the Atlantic.
+## 
+## We hope to use the admissions records provided from 2011,2012, and 2013 to see what, if any, key variables 
+## may explain the decision to deposit or not deposit. Then, utilizing the estimated coefficients, we will
+## see how this regression equation predicts the outcomes in 2014. All of the individuals recorded
+## in this dataset were admitted to College of the Atlantic. 
+## 
+## Since this project is being uploaded to Github and therefore will be in the public domain, all information 
+## containing potentially private information (names, ss number, etc.) have been "scrubbed" from the dataset.
+## 
+## 
+## Notes on Data Scrubbing:
+## 
+## Original dataset contained 1015 unique entries
+## Ages were originally represented as decimals: they've been rounded down to the nearest whole number.
+## 1 entry was removed for suspected data entry errors 
+## 4 entries were removed for data errors with a_rank and p_rank (no rankings entered)
+## 
+## 
+## Thus, our final data set contains 1010 unique entries.
+## 
+## 
+## Explanation of variables:
+## 
+## "id" = unique numeric ID assigned to applicants 
+## "outcome" = binary variable; 1 if the student deposited, 0 if the student did not.
+## "freshman" = binary variable; 1 if the student was a freshman applicants, 0 if not. 
+## "ed" = binary variable; 1 if the student applied Early Decision (ED1 or ED2), 0 if applied Regular Decision.
+## "age" = age of the applicant, computed from data of birth and expected date of entry
+## "female" = binary variable; 1 if the student was female, 0 if male
+## "white" = binary variable; 1 if the student responded to their racial identification question with "White", 
+## 0 if any other response (N/A if student did not respond/data error)
+## ("white" was a forced binary: original data contained other optional responses, i.e. "Black", "Asian", etc.)
+## "newengland" = binary variable; 1 if the student was from a New England state (ME, MA, VT, CT, RI, NH), 
+## 0 if otherwise (N/A if student did not respond/data error)
+## "intl" = binary variable; 1 if student was an international applicant, 0 otherwise 
+## "married" = binary variable; 1 if student responded to questions regarding parental relationship status 
+## with "married", 0 otherwise (N/A if student did not respond/data error).
+## ("married" was a forced binary: original data contained other optional responses, i.e. "Widowed", "Single", etc.)
+## "hsgpa" = student high school gpa at time of graduation, self-reported. (N/A if student did not respond/data error)
+## "hsrank" = student high school ranking, computed from self-reported rank and self-reported student body size. 
+## (This is a percentile ranking. (N/A if student did not respond/data error))
+## "sat" & "act" = student SAT and ACT scores, self-reported (N/A if student did not respond/data error)
+## "a_rank" & "p_rank" = College of the Atlantic internal grading scheme; a_rank measures academic potential, 
+## p_rank measures personality/personal potential. Rank is descending (1-6, 1 the highest, 6 the lower).
+## "interview" = binary variable; 1 if student had an interview with an admissions counselor, 0 otherwise. 
+## (Computed from internal interview score codes; only students with interview scores were counted as having received an interview. 
+## Scores were repressed and are not represented here.)
+## "award" = Reported amount of COA financial aid award. Students with no award listed in master file had variable forced to 0. 
+##
 ## ----------------------------------------------------------------------
 
 ## ----------------------------------------------------------------------
-# Preamble
+## Preamble
 ## ----------------------------------------------------------------------
 
 library(aod)
@@ -58,6 +64,7 @@ library(MASS)
 library(ggplot2)
 library(arm)
 library(plyr)
+library(Epi)
 
 oldData<-read.csv("C:/Users/Kyle Shank/Desktop/SCHOOL/COA/ECONOMETRICS/github project/coa_admit_data_with_ed.csv")
 
@@ -975,7 +982,7 @@ predicted.outcomes<-ifelse(prediction.matrix[,3]>=0.5,1,0)
 predicted.outcomes[628]=0
 ## Fixes the mistake called by the NA in age in oldData.reg[628]
 prediction.matrix[,4]<-predicted.outcomes
-## Puts this predicted outcomes into column 4
+## Puts these predicted outcomes into column 4
 
 
 true.positives<-count(prediction.matrix[,2]==1 & prediction.matrix[,4]==1)[2,2]
@@ -995,46 +1002,135 @@ false.negatives
 ## 153 false negatives.
 
 
-total.accuracy <- (true.positives+true.negatives)/total.admits
-positive.accuracy <- true.positives/total.deposits
-negative.accuracy <- true.negatives/length(oldData$outcome==0)
+confusion.table<-matrix(nrow=2,ncol=2)
+colnames(confusion.table)<-c("Condition Positive","Condition Negative")
+rownames(confusion.table)<-c("Test Outcome Positive","Test Outcome Negative")
+confusion.table[,1]<-c(true.positives,false.positives)
+confusion.table[,2]<-c(false.negatives,true.negatives)
+confusion.table
+
+sensitivity<-true.positives/total.deposits
+## Sensitivity is the proportion of of corretly identified positives,
+## or TPR = TP/P = TP/(TP+FN)
+## The logit regression correctly identifies 57% of the depositing students.
+specificity<-true.negatives/(total.admits-total.deposits)
+## Specificty is the proportion of correclty identified negatives,
+## or TPN = TN/N = TN/(FP+TN)
+## The logit regression correclty identifies non-depositing students 89.87% of the time.
+accuracy<-(true.negatives+true.positives)/(total.admits)
+## Accuracy is the proportion of true results in the population.
+## ACC = (TP+TN)/(TP+FP+TN+FN)
+## The logit regression is 78.31% accurate
+precision<-(true.positives)/(true.positives+false.positives)
+## Precision is the proportion of true positives against all positive results.
+## PPV (precision = positive predicted value) = TP/(TP+FP)
+## The logit regression is 75.64% precise
+
+## As we can see, the logit model has relatively high accuracy and precision.
+## has high specifity, but has relatively low sensitivity. We want to maximize both
+## specificty and sensitivity. This will be dependent upon what value we assign to the round()
+## function above (the cut-off condition): the fitted.value at which or above we assign a value of 1 (deposit) 
+## and below which we assign a value of 0 (non-deposit). To find this optimal value,
+## we will find the ROC (receiver operating characteristic) curve, which measures
+## sensitivity against fall-out, or 1-specificty.) 
+
+ROC(form=outcome ~ freshman + ed + age +  a_rank  + interview + award + hs_dummy, data=oldData.reg)
+
+## Thus, specificity and sensitivity are maximized at the cut-off condition of 0.301
+
+best.prediction.matrix<-matrix(0,ncol=4,nrow=length(oldData.reg$outcome))
+colnames(best.prediction.matrix)<-c("id", "outcome", "fitted probability","predicted outcome")
+## Construct a matrix with four columns: "id", "outcome", "fitted probability", and "predictd outcomes"
+best.prediction.matrix[,1]<-oldData.reg$id
+## Put the ids into column 1
+best.prediction.matrix[,2]<-oldData.reg$outcome
+## Puts the predicted outcomes in column 2
+best.fitted.values <- predict(bestfit.logit,oldData.reg,type="response")
+## Creates a vector of fitted values from bestfit.logit
+best.prediction.matrix[,3]<- best.fitted.values
+## Puts this vector into column 3
+best.predicted.outcomes<-ifelse(best.prediction.matrix[,3]>=0.301,1,0)
+## Creates a vector that rounds the fitted probabilities up or down from 0.5,
+## simluating a positive (1) and negative (0) response
+best.predicted.outcomes[628]=0
+## Fixes the mistake called by the NA in age in oldData.reg[628]
+best.prediction.matrix[,4]<-best.predicted.outcomes
+## Puts these predicted outcomes into column 4
+
+best.true.positives<-count(best.prediction.matrix[,2]==1 & best.prediction.matrix[,4]==1)[2,2]
+best.true.positives
+## True positives where actual outcome matches predicted outcome
+## 283 true positives
+best.false.positives<-count(best.prediction.matrix[,2]==0 & best.prediction.matrix[,4]==1)[2,2]
+best.false.positives
+## False positives where actual outcomes do not match predicted outcomes
+## 183 false positives
+best.true.negatives<-count(best.prediction.matrix[,2]==0 & best.prediction.matrix[,4]==0)[2,2]
+best.true.negatives
+## True negatives where actual outcome matches predicted outcome
+## 469 true negatives
+best.false.negatives<-count(best.prediction.matrix[,2]==1 & best.prediction.matrix[,4]==0)[2,2]
+best.false.negatives
+## 75 false negatives.
+
+best.sensitivity<-best.true.positives/total.deposits
+## The optimal cut-off correctly identifies 79.05% of the depositing students.
+best.specificity<-best.true.negatives/(total.admits-total.deposits)
+## The optimal cut-off correclty identifies non-depositing students 71.93% of the time.
+best.accuracy<-(best.true.negatives+best.true.positives)/(total.admits)
+## The optimal cut-off is 74.45% accurate
+best.precision<-(best.true.positives)/(best.true.positives+best.false.positives)
+## The optimal cut-off is 60.72% precise
+
+## Does this outperform the admissions-process "Null Model", which is that a random third of all
+## admissions candidates will deposit?
+
+null.prediction.matrix<-matrix(0,ncol=4,nrow=length(oldData.reg$outcome))
+colnames(null.prediction.matrix)<-c("id", "outcome", "fitted probability","predicted outcome")
+## Construct a matrix with four columns: "id", "outcome", "fitted probability", and "predictd outcomes"
+null.prediction.matrix[,1]<-oldData.reg$id
+## Put the ids into column 1
+null.prediction.matrix[,2]<-oldData.reg$outcome
+## Puts the predicted outcomes in column 2
+null.fitted.values <- predict(bestfit.logit,oldData.reg,type="response")
+## Creates a vector of fitted values from bestfit.logit
+null.prediction.matrix[,3]<- null.fitted.values
+## Puts this vector into column 3
+set.seed(1234)
+## For reproduction
+null.predicted.outcomes<-rbinom(length(oldData.reg$outcome),1,0.3)
+## Creates a vector of random 1s and 0s
+## simluating a positive (1) and negative (0) response by creating a binomial 
+## distribution with rbinom(). The probability of success (1) is 30%
+null.prediction.matrix[,4]<-null.predicted.outcomes
+## Puts this predicted outcomes into column 4
 
 
 
+null.true.positives<-count(null.prediction.matrix[,2]==1 & null.prediction.matrix[,4]==1)[2,2]
+null.true.positives
+## True positives where actual outcome matches predicted outcome
+## 104 true positives
+null.false.positives<-count(null.prediction.matrix[,2]==0 & null.prediction.matrix[,4]==1)[2,2]
+null.false.positives
+## False positives where actual outcomes do not match predicted outcomes
+## 202 false positives
+null.true.negatives<-count(null.prediction.matrix[,2]==0 & null.prediction.matrix[,4]==0)[2,2]
+null.true.negatives
+## True negatives where actual outcome matches predicted outcome
+## 450 true negatives
+null.false.negatives<-count(null.prediction.matrix[,2]==1 & null.prediction.matrix[,4]==0)[2,2]
+null.false.negatives
+## 254 false negatives.
 
-#----------------------------------
-# Predict for Future Year
-#----------------------------------
-# Makes a matrix
-ymat<-matrix(numeric(0),ncol=2,nrow=length(NewData$age))
-colnames(ymat)<-c("id","decision")
-# Puts the Student ID into column 1
-ymat[,1]<-NewData$id
-# Puts the predicted outcomes in column 2
-prediction<-predict(glm.out,NewData,type="response")
-ymat[,2]<-prediction
-# resets the predicted outcomes to critical value
-ymat[,2]<-ifelse(ymat[,2]>=0.4,1,0)
-write.table(ymat, file = "lastlist.csv", sep = ",")
-# Number of Deposits Predicted
-count1<-count(ymat[,2]==1)[2,2]
-# Number of Non-Deposits Predicted
-count0<-count(ymat[,2]==0)[2,2]
-# Data Non-Deposit Outcome
-# Accuracy of Yield
-yield.accuracy<-(count1+count0)/length(NewData$age)
-# Accuracy of Deposits
-total1<-sum(ymat[,1])
-deposits.accuracy<-count1/total1
-# Accuracy of Non-Deposits
-total0<-count(ymat[,1]==0)[2,2]
-nondeposits.accuracy<-count0/total0
+null.sensitivity<-null.true.positives/total.deposits
+## The null hypothesis identifies 29.05% of the depositing students.
+null.specificity<-null.true.negatives/(total.admits-total.deposits)
+## The null hypothesis identifies non-depositing students 69.01% of the time.
+null.accuracy<-(null.true.negatives+null.true.positives)/(total.admits)
+## The null hypothesis is 54.85% accurate
+null.precision<-(null.true.positives)/(null.true.positives+null.false.positives)
+## The null hypothesis is 33.98% precise
 
-# Accuracy of Yield
-print(yield.accuracy)
-# Accuracy of Deposits
-print(deposits.accuracy)
-# Accuracy of Non-Deposits
-print(nondeposits.accuracy)
-
-  
+## Does this outperform the admissions-process "Null Model", which is that a random third of all
+## admissions candidates will deposit?
