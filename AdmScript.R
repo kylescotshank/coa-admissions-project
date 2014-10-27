@@ -7,7 +7,7 @@
 ## 
 ## We hope to use the admissions records provided from 2011,2012, and 2013 to see what, if any, key variables 
 ## may explain the decision to deposit or not deposit. Then, utilizing the estimated coefficients, we will
-## see how this regression equation predicts the outcomes in 2014. All of the individuals recorded
+## see how well this regression equation predicts the outcomes in 2014. All of the individuals recorded
 ## in this dataset were admitted to College of the Atlantic. 
 ## 
 ## Since this project is being uploaded to Github and therefore will be in the public domain, all information 
@@ -56,7 +56,7 @@
 ## ----------------------------------------------------------------------
 
 ## ----------------------------------------------------------------------
-## Preamble
+## Preamble / Load
 ## ----------------------------------------------------------------------
 
 library(aod)
@@ -66,6 +66,8 @@ library(arm)
 library(plyr)
 library(Epi)
 
+oldDataURL <- paste('https://d396qusza40orc.cloudfront.net/rprog%2Fdata%2Fspecdata.zip')
+newDataURL <- paste()
 oldData<-read.csv("C:/Users/Kyle Shank/Desktop/SCHOOL/COA/ECONOMETRICS/github project/coa_admit_data_with_ed.csv")
 
 ## ----------------------------------------------------------------------
@@ -957,12 +959,12 @@ exp(cbind(OR=coef(bestfit.logit.output),confint.default(bestfit.logit)))
 
 ## ----------------------------------------------------------------------
 ## ----------------------------------------------------------------------
-#------------------------
-# Predictive Accuracy
-#------------------------
+## ------------------------
+## Predictive Accuracy
+## ------------------------
 ## ----------------------------------------------------------------------
 ## ----------------------------------------------------------------------
-#----------------------------
+
 
 
 prediction.matrix<-matrix(0,ncol=4,nrow=length(oldData.reg$outcome))
@@ -1132,5 +1134,82 @@ null.accuracy<-(null.true.negatives+null.true.positives)/(total.admits)
 null.precision<-(null.true.positives)/(null.true.positives+null.false.positives)
 ## The null hypothesis is 33.98% precise
 
-## Does this outperform the admissions-process "Null Model", which is that a random third of all
-## admissions candidates will deposit?
+## ----------------------------------------------------------------------
+## We see that the best.fit model (with a cut-off value of 0.301) provides
+## the highest degree of sensitivity, or true-poisitve rate. (79.05%, as opposed
+## to 57.26% for a cut-off value of 0.5 and 29.05% for the null hypothesis). 
+## The best.fit model has a sensitivity that is 38.05% better than the model with a cut-off
+## value of 0.5 and 172.11% better than the null model.
+##
+## It does not, however, have the highest specificity, or true-negative rate: the cut-off value of 0.5 
+## has a specificity of 89.87, which is 24.9% better than the best.fit model and 30.2% better than
+## the null model.
+##
+## The best.fit model also underperforms by measures of accuracy: the cut-off value of 0.5
+## has an accuracy of 78.31%, the highest of the three. However, it is only 5.18% more accurate
+## than the best-fit model (74.45%). It is 42.77% more accurate than the null model.
+##
+## The best.fit model, however, does maximize both sensitivity and specificity underneath 
+## the constraints of the current dataset. We will therefore move forward and use the ROC point of
+## 0.301 to work on the data from 2014.
+## ----------------------------------------------------------------------
+
+
+## ----------------------------------------------------------------------
+## ----------------------------------------------------------------------
+## ------------------------
+## 2014 Data
+## ------------------------
+## ----------------------------------------------------------------------
+## ----------------------------------------------------------------------
+
+newData<-read.csv(file = "C:/Users/Kyle Shank/Desktop/SCHOOL/COA/ECONOMETRICS/github project/coa_admit_data_2014.csv")
+
+bestfit.logit.2014<-glm(outcome ~ freshman + ed + age +  a_rank  + interview + award,
+                   family= binomial(logit), data = oldData.reg, na.action=na.omit)
+summary(bestfit.logit.2014)
+exp(cbind(OR=coef(bestfit.logit.2014),confint.default(bestfit.logit.2014)))
+
+prediction.matrix.2014<-matrix(0,ncol=4,nrow=length(newData$outcome))
+colnames(prediction.matrix.2014)<-c("id", "outcome", "fitted probability","predicted outcome")
+## Construct a matrix with four columns: "id", "outcome", "fitted probability", and "predictd outcomes"
+prediction.matrix.2014[,1]<-newData$id
+## Put the ids into column 1
+prediction.matrix.2014[,2]<-newData$outcome
+## Puts the predicted outcomes in column 2
+fitted.values.2014 <- predict(bestfit.logit.2014,newData,type="response")
+## Creates a vector of fitted values from bestfit.logit
+prediction.matrix.2014[,3]<- fitted.values.2014
+## Puts this vector into column 3
+predicted.outcomes.2014<-ifelse(prediction.matrix.2014[,3]>=0.301,1,0)
+## Creates a vector that rounds the fitted probabilities up or down from 0.5,
+## simluating a positive (1) and negative (0) response
+prediction.matrix.2014[,4]<-predicted.outcomes.2014
+## Puts these predicted outcomes into column 4
+
+
+
+true.positives.2014<-count(prediction.matrix.2014[,2]==1 & prediction.matrix.2014[,4]==1)[2,2]
+true.positives.2014
+## True positives where actual outcome matches predicted outcome
+## 67 true positives
+false.positives.2014<-count(prediction.matrix.2014[,2]==0 & prediction.matrix.2014[,4]==1)[2,2]
+false.positives.2014
+## False positives where actual outcomes do not match predicted outcomes
+## 70 false positives
+true.negatives.2014<-count(prediction.matrix.2014[,2]==0 & prediction.matrix.2014[,4]==0)[2,2]
+true.negatives.2014
+## True negatives where actual outcome matches predicted outcome
+## 188 true negatives
+false.negatives.2014<-count(prediction.matrix.2014[,2]==1 & prediction.matrix.2014[,4]==0)[2,2]
+false.negatives.2014
+## 29 false negatives.
+
+sensitivity.2014<-true.positives.2014/sum(newData$outcome)
+## The optimal cut-off correctly identifies 69.79%
+specificity.2014<-true.negatives.2014/(length(newData$outcome)-sum(newData$outcome))
+## The optimal cut-off correclty identifies non-depositing students 72.87% of the time.
+accuracy.2014<-(true.negatives.2014 + true.positives.2014)/(length(newData$outcome))
+## The optimal cut-off is 78.32% accurate
+precision.2014<-(true.positives.2014)/(true.positives.2014 + false.positives.2014)
+## The optimal cut-off is 48.9% precise
