@@ -3,11 +3,11 @@
 ## 9/26/2014
 ## 
 ## The purpose of this code is to perform a logistic regression on data
-## obtained from three years worth of records regarding matriculant deposits at College of the Atlantic.
+## obtained from three years worth of records regarding admitted student deposits at College of the Atlantic.
 ## 
 ## We hope to use the admissions records provided from 2011,2012, and 2013 to see what, if any, key variables 
 ## may explain the decision to deposit or not deposit. Then, utilizing the estimated coefficients, we will
-## see how well this regression equation predicts the outcomes in 2014. All of the individuals recorded
+## see how well this regression equation predicts the deposit outcomes for 2014. All of the individuals recorded
 ## in this dataset were admitted to College of the Atlantic. 
 ## 
 ## Since this project is being uploaded to Github and therefore will be in the public domain, all information 
@@ -20,6 +20,7 @@
 ## Ages were originally represented as decimals: they've been rounded down to the nearest whole number.
 ## 1 entry was removed for suspected data entry errors 
 ## 4 entries were removed for data errors with a_rank and p_rank (no rankings entered)
+## 1 entry has a data error for "age", accounted for and corrected below.
 ## 
 ## 
 ## Thus, our final data set contains 1010 unique entries.
@@ -62,13 +63,18 @@
 library(aod)
 library(MASS)
 library(ggplot2)
+library(ggthemes)
 library(arm)
 library(plyr)
 library(Epi)
 
-oldDataURL <- paste('https://d396qusza40orc.cloudfront.net/rprog%2Fdata%2Fspecdata.zip')
-newDataURL <- paste()
-oldData<-read.csv("C:/Users/Kyle Shank/Desktop/SCHOOL/COA/ECONOMETRICS/github project/coa_admit_data_with_ed.csv")
+
+oldData<-read.csv("coa_admit_data_with_ed.csv")
+newData<-read.csv("coa_admit_data_2014.csv")
+## Both of these files need to be obtained from the Github repository
+## and put into your working directory
+## oldData<-https://github.com/kylescotshank/coa-admissions-project/blob/master/coa_admit_data_with_ed.csv
+## newData<-https://github.com/kylescotshank/coa-admissions-project/blob/master/coa_admit_data_2014.csv
 
 ## ----------------------------------------------------------------------
 ## ----------------------------------------------------------------------
@@ -91,13 +97,13 @@ percent.total.deposits
 
 total.ed.admits<-sum(oldData$ed==1)
 total.ed.deposits<-sum(oldData$ed==1 & oldData$outcome==1)
-percent.total.admits<-total.ed.admits/total.admits
-percent.total.deposits<-total.ed.deposits/total.deposits
+percent.ed.total.admits<-total.ed.admits/total.admits
+percent.ed.total.deposits<-total.ed.deposits/total.deposits
 ed.deposit.rate<-total.ed.deposits/total.ed.admits
 total.ed.admits
 total.ed.deposits
-percent.total.admits
-percent.total.deposits
+percent.ed.total.admits
+percent.ed.total.deposits
 ed.deposit.rate
 
 ## ----------------------------------------------------------------------
@@ -110,10 +116,13 @@ ed.deposit.rate
 ## just.ed<- oldData[oldData$ed==1,]
 ## just.ed.nr<-oldData[oldData$ed==1 & oldData$outcome==0,]
 ## summary(just.ed$award)
+## mean(oldData$award[oldData$ed==0])
+## median(oldData$award[oldDAta$ed==0])
 ## summary(just.ed.nr$award)
 ##
 ## Interesting finding (from above): of our ED admits, the mean and median COA award for
-## those that deposited was $19,199 and $22,750, respectively. (st. div = 11,781.15)
+## those that deposited was $19,19 and $22,750, respectively. (st. div = 11,781.15). This is significantly 
+## higher than the mean ($15822.11) and median ($15,000) for non-ED students. (st.div = 12,544.73)
 ## For those that did not deposit, these values are $2,860 and 0, respectively. (st.div = 7567.98)
 ## of the 7 ED admits that did not deposit, six were given award amounts of 0. The student 
 ## which did receive an award ($20,023), and not deposit, id# 132035 [26,], was incidentally an international student. 
@@ -121,9 +130,22 @@ ed.deposit.rate
 ## ----------------------------------------------------------------------
 
 correct.age<-oldData[-628,]
-mean(correct.age$age)
+mean(correct.age$age,na.omit=T)
 median(correct.age$age)
 sd(correct.age$age)
+
+plot1<- ggplot(correct.age, aes(x = age)) + geom_histogram(binwidth=1, aes(fill=..count..)) + theme_few() +
+    scale_color_few("dark") + labs(x="Age of Applicant", y = "Count", title= "Histogram of Ages")
+plot1
+## Histogram plot of ages
+
+
+plot2 <- ggplot(correct.age, aes(x = age, y = award)) + geom_point(aes(color = award)) + theme_few() +
+    scale_color_gradient(low = "bisque3", high = "chartreuse4") + labs(x =" Age of Applicant", 
+                                                                         y =" Financial Aid Award",
+                                                                         title = "Age v. Award Amount")
+plot2
+## Scatterplot of ages v. award amounts
 
 ## ----------------------------------------------------------------------
 ## One student (id# 216822, [628,]) has an incorrect data entry for age, who is therefore supressed for the age
@@ -162,6 +184,16 @@ transfer.deposit.rate
 ## Since 259 of 834 freshman deposited, this gives us a deposit rate of 
 ## approximately 31%. Since 99 of 176 transfer applicants
 ## deposited, this gives us a deposit rate of 56.25%.
+##
+## summary(oldData[oldData$freshman==1,]$award)
+## summary(oldData[oldData$freshman==1 & oldData$outcome==1,]$award)
+## summary(oldData[oldData$freshman==0,]$award)
+## summary(oldData[oldData$freshman==0 & oldData$outcome==1,]$award)
+##
+## The mean award for an admitted freshman student was $16,750, with a median of $17,490.
+## The mean award for a depositing freshman student was $22,930, with a median of $25,940.
+## The mean award for an admited transfer student was $13,200, with a median of $10,000.
+## The mean award for a depositing transfer student was $15,310, with a median of $18,000. 
 ## ----------------------------------------------------------------------
 
 female.admits<-sum(oldData$female==1)
@@ -191,6 +223,16 @@ male.deposit.rate
 ## 68.7% of deposits came from female admitted students (112 were male, comprising 31.3%).
 ## Of 702 admitted female students, 246 deposited, giving us a deposit rate of 35.04%. 
 ## Of 308 admitted male students, 112 deposited, for a deposit rate of 36.36%.
+##
+## summary(oldData[oldData$female==1,]$award)
+## summary(oldData[oldData$female==1 & oldData$outcome==1,]$award)
+## summary(oldData[oldData$female==0,]$award)
+## summary(oldData[oldData$female==0 & oldData$outcome==1,]$award)
+##
+## The mean award for an admitted female student was $16,460, with a median of $17,050.
+## The mean award for a depositing female student was $21,190, with a median of $24,490
+## The mean award for an admitted male student was $15,400, with a median of $13,560.
+## The mean award for a depositing male student was $20,030, with a median of $24,490.
 ## ----------------------------------------------------------------------
 
 white.admits<-sum(oldData$white==1,na.rm=TRUE)
@@ -220,13 +262,24 @@ missing.race
 
 ## ----------------------------------------------------------------------
 ## Of our 1010 admits, 733 of the admitted students self-identified as being white,
-## giving us a total admitted student composition of roughly 72.5% caucasian (with 13.2% identify
+## giving us a total admitted student composition of roughly 72.5% caucasian (with 13.2% identifying
 ## as a different race and 14.3% not responding).
 ## Of 358 deposits, 289 of those recorded were from people identifying as white, meaning
 ## roughly 80.7% of the depositing students were white (with 13.1% identifying as another race
 ## and 6.2% not responding). This means that the deposit rate for white admitted students
 ## was 39.4%, and the deposit rate for nonwhite students was 35.07%. The deposit rate for
 ## students who did not identify their race (143 admitted students) was 15.38% (22 deposits/143 admits)
+##
+## summary(oldData[oldData$white==1,]$award)
+## summary(oldData[oldData$white==1 & oldData$outcome==1,]$award)
+## summary(oldData[oldData$white==0,]$award)
+## summary(oldData[oldData$white==0 & oldData$outcome==1,]$award)
+##
+## The mean award for an admitted white student was $16,580, with a median of $17,130.
+## The mean award for a depositing white student was $21,120, with a meedian of $24,330.
+## The mean award for an admitted non-white student was $19,130, with a median of $23,940.
+## The mean award for a depositing non-white student was $25,190, with a median of $26,250.
+##
 ## ----------------------------------------------------------------------
 
 newengland.admits<-sum(oldData$newengland==1, na.rm=TRUE)
@@ -240,7 +293,7 @@ percent.not.newengland.deposits<-not.newengland.deposits/total.deposits
 newengland.deposit.rate<-newengland.deposits/newengland.admits
 missing.newengland<-sum(is.na(oldData$newengland))
 missing.newengland.deposits<-sum(is.na(oldData$newengland & oldData$outcome==1))
-missing.newengland.deposit.rate<-missing.married.deposits/missing.married
+missing.newengland.deposit.rate<-missing.newengland.deposits/missing.newengland
 newengland.admits
 not.newengland.admits
 percent.newengland.admits
@@ -257,27 +310,38 @@ missing.newengland.deposit.rate
 ## Of our 1010 admits, 348 of the admitted students were from New England states, with
 ## 654 being from states outside of New England. Thus 34.45% of the admitted student body
 ## was New Englanders, and 64.75% "from away". (8 students did not submit information regarding their
-## home state and/or data was incorrectly entered, comprising 0.79% of the student body)
+## home state and/or data was incorrectly entered, comprising 0.79% of the population)
 ## 134 students from New England deposited, whereas 223 students not from New England deposited,
-## comprising 37.43% and 62.29% of the applicant pool, respectively. Of the 8 students which
-## did not submit state information and/or had data entry errors, only 1 deposited (interestingly enough,
-## this student had the "worst" A and P scores and received no award.)
+## comprising 37.43% and 62.29% of the deposit pool, respectively. Of the 8 students which
+## did not submit state information and/or had data entry errors, only 1 deposited (Note:
+## this student had the "worst" A and P scores and received no financial aid award. oldData[363,])
 ## Due to the way the data was cleaned, international students were groupd with those students not from
 ## New England (both had the variable "newengland" = 0. If we remove international students from the "not.newengland" grouping,
 ## the findings change somewhat. 553 non-New Englanders admitted, comprising 54.75% of the admitted student body.
 ## 181 non-New Englanders deposited, comprising 50.55% of the depositing student body, for a deposit rate
 ## of 32.73%. None of the 8 students above missing state values were international students. 
 # 
-# not.newengland.admits.corrected<-sum(oldData$newengland==0 & oldData$intl==0, na.rm=TRUE)
-# percent.not.newengland.admits.corrected<-not.newengland.admits.corrected/total.admits
-# not.newengland.deposits.corrected<-sum(oldData$outcome==1 & oldData$newengland==0 & oldData$intl==0, na.rm=TRUE)
-# percent.not.newengland.deposits.corrected<-not.newengland.deposits.corrected/total.deposits
-# not.newengland.deposit.rate.corrected<-not.newengland.deposits.corrected/not.newengland.admits.corrected
-# not.newengland.admits.corrected
-# percent.not.newengland.admits.corrected
-# not.newengland.deposits.corrected
-# percent.not.newengland.deposits.corrected
-# not.newengland.deposit.rate.corrected
+## not.newengland.admits.corrected<-sum(oldData$newengland==0 & oldData$intl==0, na.rm=TRUE)
+## percent.not.newengland.admits.corrected<-not.newengland.admits.corrected/total.admits
+## not.newengland.deposits.corrected<-sum(oldData$outcome==1 & oldData$newengland==0 & oldData$intl==0, na.rm=TRUE)
+## percent.not.newengland.deposits.corrected<-not.newengland.deposits.corrected/total.deposits
+## not.newengland.deposit.rate.corrected<-not.newengland.deposits.corrected/not.newengland.admits.corrected
+## not.newengland.admits.corrected
+## percent.not.newengland.admits.corrected
+## not.newengland.deposits.corrected
+## percent.not.newengland.deposits.corrected
+## not.newengland.deposit.rate.corrected
+##
+## summary(oldData[oldData$newengland==1,]$award)
+## summary(oldData[oldData$newengland==1 & oldData$outcome==1,]$award)
+## summary(oldData[oldData$newengland==0,]$award)
+## summary(oldData[oldData$newengland==0 & oldData$outcome==1,]$award)
+##
+## The mean award for an admitted New England student was $16,370, with a median of $16,480.
+## The mean award for a depositing New England student was $19,910, with a meedian of $23,050.
+## The mean award for an admitted non-New England student was $16,100, with a median of $16,200.
+## The mean award for a depositing non-New England student was $21,470, with a median of $25,920.
+##
 ## ----------------------------------------------------------------------
 
 intl.admits<-sum(oldData$intl==1)
@@ -296,15 +360,16 @@ intl.deposit.rate
 ## Of 358 deposits, 42 were international students, accounting for 
 ## of 11.73% of depositing students. We therefore have a deposit ratio of 41.58% (42 deposits / 101 admitted).
 ##
-## just.intl<- oldData[oldData$intl==1 & oldData$outcome==1,]
-## just.intl.nr<-oldData[oldData$intl==1 & oldData$outcome==0,]
-## summary(just.intl$award)
-## summary(just.intl.nr$award)
+## summary(oldData[oldData$intl==1,]$award)
+## summary(oldData[oldData$intl==1 & oldData$outcome==1,]$award)
+## summary(oldData[oldData$intl==0,]$award)
+## summary(oldData[oldData$intl==0 & oldData$outcome==1,]$award)
 ##
-## Interestingly, the international student aid compositions seem to be relatively similar.
-## International students that deposit have generally higher mean ($24,060) and median ($26,360)
-## award values than those international students that did not deposit ($18,610 and $22,950), but
-## not significantly so.
+## The mean award for an admitted international student was $20,870, with a median of $25,500.
+## The mean award for a depositing international student was $24,060, with a meedian of $26,360.
+## The mean award for an admitted non-international student was $15,610, with a median of $13,620.
+## The mean award for a depositing non-international student was $20,390, with a median of $24,000.
+##
 ## ----------------------------------------------------------------------
 
 married.admits<-sum(oldData$married==1, na.rm=TRUE)
@@ -339,6 +404,17 @@ missing.married.deposit.rate
 ## 140 depositing students did not, comprising 39.1% of depositing students. 
 ## 3 depositing students did not provide information for this variable, comprising 0.8% of the
 ## depositing student body. 
+##
+## summary(oldData[oldData$married==1,]$award)
+## summary(oldData[oldData$married==1 & oldData$outcome==1,]$award)
+## summary(oldData[oldData$married==0,]$award)
+## summary(oldData[oldData$married==0 & oldData$outcome==1,]$award)
+##
+## The mean award for an admitted student with married parents was $16,330, with a median of $15,080.
+## The mean award for a depositing student with married parents was $19,360, with a median of $22,950.
+## The mean award for an admitted student without married parents was $15,730, with a median of $18,260.
+## The mean award for a depositing student without married parents was $23,140, with a median of $25,960.
+##
 ## ----------------------------------------------------------------------
 
 hsgpa.admits<-sum(!is.na(oldData$hsgpa))
@@ -375,6 +451,7 @@ no.hsgpa.deposit.rate
 ## outside of this scale).
 
 corrected.hsgpa.admits<-oldData[oldData$hsgpa<=4.0 & !is.na(oldData$hsgpa),]
+corrected.no.hsgpa.admits<-oldData[oldData$hsgpa>4.0 & is.na(oldData$hsgpa),]
 corrected.hsgpa.deposits<-oldData[oldData$outcome==1 & !is.na(oldData$hsgpa) & oldData$hsgpa<=4.0,]
 mean(corrected.hsgpa.admits$hsgpa)
 median(corrected.hsgpa.admits$hsgpa)
@@ -383,10 +460,18 @@ mean(corrected.hsgpa.deposits$hsgpa)
 median(corrected.hsgpa.deposits$hsgpa)
 sd(corrected.hsgpa.deposits$hsgpa)
 
+
+plot3 <- ggplot(corrected.hsgpa.admits, aes(x = hsgpa, y = award)) + geom_point(aes(color = award)) + theme_few() +
+    scale_color_gradient(low = "chocolate", high = "darkgreen") + labs(x = "High School GPA",
+                                                                       y = "Financial Aid Award",
+                                                                       title = "H.S. GPA v. Award Amount")
+plot3
+## Scatterplot of hsgpa v. award amounts
+
 ## ----------------------------------------------------------------------
-## Of 1010 admitted students, 588 submitted high school GPAs for review.
+## Of 1010 admitted students, 588 submitted high school GPAs on a 4.0 scale for review.
 ## The mean GPA of those submitted on a 4.0 scale was 3.59, with a median of 3.66 and a standard deviation of 0.329.
-## 422 students did not submit GPAs for review. Thus, approximately 58.22% of our
+## 422 students did not submit GPAs on a 4.0 scale for review. Thus, approximately 58.22% of our
 ## admitted students submitted GPAs and 41.78% did not.
 ## 198 of the 358 depositing students submitted GPAs, comprising 55.3% of total deposits.
 ## The mean GPA (4.0 scale) of depositing students was also 3.59, with a median of 3.7 and a standard deviation of 0.324.
@@ -421,6 +506,12 @@ just.deposits.hsrank<-oldData[oldData$outcome==1 & !is.na(oldData$hsrank),]
 mean(just.deposits.hsrank$hsrank)
 median(just.deposits.hsrank$hsrank)
 sd(just.deposits.hsrank$hsrank)
+
+plot4 <- ggplot(oldData, aes(x = hsrank, y = award)) + geom_point(aes(color = award)) + theme_few() +
+    scale_color_gradient(low = "chocolate", high = "darkgreen") + labs(x = "High School Rank",
+                                                                       y = "Financial Aid Award",
+                                                                       title = "H.S. Rank v. Award Amount")
+plot4
 
 ## ----------------------------------------------------------------------
 ## ----------------------------------------------------------------------
@@ -461,6 +552,15 @@ mean(just.deposits.sat$sat)
 median(just.deposits.sat$sat)
 sd(just.deposits.sat$sat)
 
+
+plot5 <- ggplot(oldData, aes(x = sat, y = award)) + geom_point(aes(color = award)) + theme_few() +
+    scale_color_gradient(low = "slategray4", high = "firebrick") + labs(x = "SAT Score",
+                                                                       y = "Financial Aid Award",
+                                                                       title = "SAT Score v. Award Amount") +
+    xlim(c(1000,2400))
+plot5
+
+
 ## ----------------------------------------------------------------------
 ## Of 1010 admitted students, 524 students reported SAT scores and 486 did not, comprising
 ## 51.88% and 48.12% of the admitted student population, respectively.
@@ -498,6 +598,14 @@ just.deposits.act<-oldData[oldData$outcome==1 & !is.na(oldData$act),]
 mean(just.deposits.act$act)
 median(just.deposits.act$act)
 sd(just.deposits.act$act)
+
+
+plot6 <- ggplot(oldData, aes(x = act, y = award)) + geom_point(aes(color = award)) + theme_few() +
+    scale_color_gradient(low = "plum4", high = "aquamarine") + labs(x = "ACT Score",
+                                                                        y = "Financial Aid Award",
+                                                                        title = "ACT Score v. Award Amount") +
+    xlim(c(10,35))
+plot6
 
 ## ----------------------------------------------------------------------
 ## Of 1010 admitted students, 202 students submitted ACT scores and 808 did not,
@@ -615,6 +723,16 @@ sd(no.interview.prank$p_rank)
 no.interview.prank.deposits<-oldData[oldData$interview==0 & oldData$outcome==1,]
 summary(no.interview.prank.deposits$p_rank)
 sd(no.interview.prank.deposits$p_rank)
+
+
+plot7 <- ggplot(oldData, aes(x = sat, y = award)) + geom_point(aes(color = award)) + theme_few() +
+    scale_color_gradient(low = "slategray4", high = "firebrick") + labs(x = "SAT Score",
+                                                                        y = "Financial Aid Award",
+                                                                        title = "SAT Score v. Award Amount") +
+    xlim(c(1000,2400))
+plot7
+
+
 
 ## ----------------------------------------------------------------------
 ## Of 1010 admitted students, the mean p_rank score was 2.525, with the median of 3 and standard deviation of 0.654
@@ -818,9 +936,7 @@ no.award.deposit<-oldData[oldData$award==0 & oldData$outcome==1,]
 ## The mean award for admitted students was $16,140, the median $15,980, with a standard deviation of $12,506.07
 ## The mean award for depositing students was $20,820, the median $24,490, with a standard deviation of $11,857.65
 ## Thus, the mean award for depositing students is approximately 29% higher than the award for admitted students,
-## with the median award for depositing students being 53% higher than the award for admitted students. 
-## If we remove all of the $0 awards, the mean award amount becomes $20,660, the median $23,000, with the standard
-## deviation being $10,334.15
+## with the median award for depositing students being 53% higher than the median award for admitted students. 
 ## ----------------------------------------------------------------------
 
 ## ----------------------------------------------------------------------
@@ -884,6 +1000,19 @@ corMat
 ##
 ## ----------------------------------------------------------------------
 
+bad.logit.output<-glm(outcome ~ freshman + ed + age + female + white + newengland + intl + married + 
+                      a_rank + p_rank + interview + award + sat + act + hsgpa + hsrank,
+                  family= binomial(logit),data = na.omit(oldData), maxit=100)
+
+summary(bad.logit.output)
+
+## ----------------------------------------------------------------------
+## This model specification outputs errors that are directly related to the "hsrank" variable.
+## Additionally, after several model specification changes, it's been discovered that "sat", "act", 
+## "hsgpa", and "hsrank" are never significant in and of their own accord. We therefore move forward
+## with a changed dummy variable below.
+## ----------------------------------------------------------------------
+
 oldData.reg<-oldData
 oldData.reg[628,]$age<-NA
 hs_dummy<-as.numeric(oldData$hsgpa>0 & !is.na(oldData$hsgpa) | oldData$hsrank>0 & !is.na(oldData$hsrank))
@@ -900,9 +1029,8 @@ oldData.reg<-subset(oldData.reg,select=-act)
 ## ----------------------------------------------------------------------
 
 logit.output<-glm(outcome ~ freshman + ed + age + female + white + newengland + intl + married + 
-                     a_rank + p_rank + interview + award + hs_dummy + test_dummy,
-           family= binomial(logit),data = oldData.reg, na.action=na.omit,maxit=100)
-
+                      a_rank + p_rank + interview + award + hs_dummy + test_dummy,
+                  family= binomial(logit),data = na.omit(oldData.reg),maxit=100)
 
 summary(logit.output)
 
@@ -937,9 +1065,9 @@ exp(cbind(OR=coef(logit.output),confint.default(logit.output)))
 anova(logit.output,test="Chisq")
 stepAIC(logit.output)
 ## ----------------------------------------------------------------------
-## We want to test model fit. To test model fit on logit models, we want to minimize both deviance and 
+## We want to test model fit. To test model fit on logit models, one method is to minimize both deviance and 
 ## the Aikake information critera (AIC). Note: AIC tells us nothing about how our model compares to a null
-## model in the absolute sense. Given a set of candidate models for the data, the preferred model is the 
+## model in the absolute sense. However, given a set of candidate models for the data, the preferred model is the 
 ## one with the minimum AIC value. Hence AIC not only rewards goodness of fit, but also includes a penalty 
 ## that is an increasing function of the number of estimated parameters. 
 ## This penalty discourages overfitting (increasing the number of parameters in the model almost always improves the goodness of the fit).
@@ -949,13 +1077,13 @@ stepAIC(logit.output)
 ##
 ## Thus, our "optimized" regression equation is:
 ## Outcome_i = -8.354 - 1.314(freshman) + 3.917(ed) + + 0.3039(age) + 0.347(a_rank) + 1.041(interview) + 
-## 7.6868e-05(award) + 0.4023(hs_dummy). We will call this new regression bestfit.logit.output
+## 7.6868e-05(award) + 0.4023(hs_dummy). We will call this new regression bestfit.logit.output.
 ## ----------------------------------------------------------------------
 
 bestfit.logit<-glm(outcome ~ freshman + ed + age +  a_rank  + interview + award + hs_dummy ,
-                  family= binomial(logit), data = oldData.reg, na.action=na.omit)
+                  family= binomial(logit), data = na.omit(oldData.reg), maxit=100)
 summary(bestfit.logit)
-exp(cbind(OR=coef(bestfit.logit.output),confint.default(bestfit.logit)))
+exp(cbind(OR=coef(bestfit.logit),confint.default(bestfit.logit)))
 
 ## ----------------------------------------------------------------------
 ## ----------------------------------------------------------------------
@@ -990,18 +1118,18 @@ prediction.matrix[,4]<-predicted.outcomes
 true.positives<-count(prediction.matrix[,2]==1 & prediction.matrix[,4]==1)[2,2]
 true.positives
 ## True positives where actual outcome matches predicted outcome
-## 205 true positives
+## 218 true positives
 false.positives<-count(prediction.matrix[,2]==0 & prediction.matrix[,4]==1)[2,2]
 false.positives
 ## False positives where actual outcomes do not match predicted outcomes
-## 66 false positives
+## 78 false positives
 true.negatives<-count(prediction.matrix[,2]==0 & prediction.matrix[,4]==0)[2,2]
 true.negatives
 ## True negatives where actual outcome matches predicted outcome
-## 586 true negatives
+## 574 true negatives
 false.negatives<-count(prediction.matrix[,2]==1 & prediction.matrix[,4]==0)[2,2]
 false.negatives
-## 153 false negatives.
+## 140 false negatives.
 
 
 confusion.table<-matrix(nrow=2,ncol=2)
@@ -1014,31 +1142,31 @@ confusion.table
 sensitivity<-true.positives/total.deposits
 ## Sensitivity is the proportion of of corretly identified positives,
 ## or TPR = TP/P = TP/(TP+FN)
-## The logit regression correctly identifies 57% of the depositing students.
+## The logit regression correctly identifies 60.89% of the depositing students.
 specificity<-true.negatives/(total.admits-total.deposits)
 ## Specificty is the proportion of correclty identified negatives,
 ## or TPN = TN/N = TN/(FP+TN)
-## The logit regression correclty identifies non-depositing students 89.87% of the time.
+## The logit regression correclty identifies non-depositing students 88.03% of the time.
 accuracy<-(true.negatives+true.positives)/(total.admits)
 ## Accuracy is the proportion of true results in the population.
 ## ACC = (TP+TN)/(TP+FP+TN+FN)
-## The logit regression is 78.31% accurate
+## The logit regression is 78.41% accurate
 precision<-(true.positives)/(true.positives+false.positives)
 ## Precision is the proportion of true positives against all positive results.
 ## PPV (precision = positive predicted value) = TP/(TP+FP)
-## The logit regression is 75.64% precise
+## The logit regression is 73.64% precise
 
 ## As we can see, the logit model has relatively high accuracy and precision.
 ## has high specifity, but has relatively low sensitivity. We want to maximize both
 ## specificty and sensitivity. This will be dependent upon what value we assign to the round()
-## function above (the cut-off condition): the fitted.value at which or above we assign a value of 1 (deposit) 
+## function above (the cut-off condition, or eta): the fitted.value at which or above we assign a value of 1 (deposit) 
 ## and below which we assign a value of 0 (non-deposit). To find this optimal value,
 ## we will find the ROC (receiver operating characteristic) curve, which measures
 ## sensitivity against fall-out, or 1-specificty.) 
 
 ROC(form=outcome ~ freshman + ed + age +  a_rank  + interview + award + hs_dummy, data=oldData.reg)
 
-## Thus, specificity and sensitivity are maximized at the cut-off condition of 0.301
+## Thus, specificity and sensitivity are maximized at an eta of 0.301
 
 best.prediction.matrix<-matrix(0,ncol=4,nrow=length(oldData.reg$outcome))
 colnames(best.prediction.matrix)<-c("id", "outcome", "fitted probability","predicted outcome")
@@ -1062,27 +1190,27 @@ best.prediction.matrix[,4]<-best.predicted.outcomes
 best.true.positives<-count(best.prediction.matrix[,2]==1 & best.prediction.matrix[,4]==1)[2,2]
 best.true.positives
 ## True positives where actual outcome matches predicted outcome
-## 283 true positives
+## 295 true positives
 best.false.positives<-count(best.prediction.matrix[,2]==0 & best.prediction.matrix[,4]==1)[2,2]
 best.false.positives
 ## False positives where actual outcomes do not match predicted outcomes
-## 183 false positives
+## 210 false positives
 best.true.negatives<-count(best.prediction.matrix[,2]==0 & best.prediction.matrix[,4]==0)[2,2]
 best.true.negatives
 ## True negatives where actual outcome matches predicted outcome
-## 469 true negatives
+## 442 true negatives
 best.false.negatives<-count(best.prediction.matrix[,2]==1 & best.prediction.matrix[,4]==0)[2,2]
 best.false.negatives
-## 75 false negatives.
+## 63 false negatives.
 
 best.sensitivity<-best.true.positives/total.deposits
-## The optimal cut-off correctly identifies 79.05% of the depositing students.
+## The optimal cut-off correctly identifies 82.4% of the depositing students.
 best.specificity<-best.true.negatives/(total.admits-total.deposits)
-## The optimal cut-off correclty identifies non-depositing students 71.93% of the time.
+## The optimal cut-off correclty identifies non-depositing students 67,79% of the time.
 best.accuracy<-(best.true.negatives+best.true.positives)/(total.admits)
-## The optimal cut-off is 74.45% accurate
+## The optimal cut-off is 72.97% accurate
 best.precision<-(best.true.positives)/(best.true.positives+best.false.positives)
-## The optimal cut-off is 60.72% precise
+## The optimal cut-off is 58.41% precise
 
 ## Does this outperform the admissions-process "Null Model", which is that a random third of all
 ## admissions candidates will deposit?
@@ -1135,7 +1263,7 @@ null.precision<-(null.true.positives)/(null.true.positives+null.false.positives)
 ## The null hypothesis is 33.98% precise
 
 ## ----------------------------------------------------------------------
-## We see that the best.fit model (with a cut-off value of 0.301) provides
+## We see that the best.fit model (with an eta value of 0.301) provides
 ## the highest degree of sensitivity, or true-poisitve rate. (79.05%, as opposed
 ## to 57.26% for a cut-off value of 0.5 and 29.05% for the null hypothesis). 
 ## The best.fit model has a sensitivity that is 38.05% better than the model with a cut-off
@@ -1163,13 +1291,18 @@ null.precision<-(null.true.positives)/(null.true.positives+null.false.positives)
 ## ----------------------------------------------------------------------
 ## ----------------------------------------------------------------------
 
-newData<-read.csv(file = "C:/Users/Kyle Shank/Desktop/SCHOOL/COA/ECONOMETRICS/github project/coa_admit_data_2014.csv")
+## The dataset of 2014 does not have the information required to construct a "hs_dummy" variable.
+## We therefore must create a new logistic regression equation
 
 bestfit.logit.2014<-glm(outcome ~ freshman + ed + age +  a_rank  + interview + award,
-                   family= binomial(logit), data = oldData.reg, na.action=na.omit)
+                   family= binomial(logit), data = na.omit(oldData.reg), maxit = 100)
 summary(bestfit.logit.2014)
 exp(cbind(OR=coef(bestfit.logit.2014),confint.default(bestfit.logit.2014)))
 
+## We must also find a new eta
+ROC(form=outcome ~ freshman + ed + age +  a_rank  + interview + award, data=newData)
+
+## Utilizing an eta = 0.216
 prediction.matrix.2014<-matrix(0,ncol=4,nrow=length(newData$outcome))
 colnames(prediction.matrix.2014)<-c("id", "outcome", "fitted probability","predicted outcome")
 ## Construct a matrix with four columns: "id", "outcome", "fitted probability", and "predictd outcomes"
@@ -1181,7 +1314,7 @@ fitted.values.2014 <- predict(bestfit.logit.2014,newData,type="response")
 ## Creates a vector of fitted values from bestfit.logit
 prediction.matrix.2014[,3]<- fitted.values.2014
 ## Puts this vector into column 3
-predicted.outcomes.2014<-ifelse(prediction.matrix.2014[,3]>=0.301,1,0)
+predicted.outcomes.2014<-ifelse(prediction.matrix.2014[,3]>=0.216,1,0)
 ## Creates a vector that rounds the fitted probabilities up or down from 0.5,
 ## simluating a positive (1) and negative (0) response
 prediction.matrix.2014[,4]<-predicted.outcomes.2014
@@ -1192,24 +1325,109 @@ prediction.matrix.2014[,4]<-predicted.outcomes.2014
 true.positives.2014<-count(prediction.matrix.2014[,2]==1 & prediction.matrix.2014[,4]==1)[2,2]
 true.positives.2014
 ## True positives where actual outcome matches predicted outcome
-## 67 true positives
+## 74 true positives
 false.positives.2014<-count(prediction.matrix.2014[,2]==0 & prediction.matrix.2014[,4]==1)[2,2]
 false.positives.2014
 ## False positives where actual outcomes do not match predicted outcomes
-## 70 false positives
+## 103 false positives
 true.negatives.2014<-count(prediction.matrix.2014[,2]==0 & prediction.matrix.2014[,4]==0)[2,2]
 true.negatives.2014
 ## True negatives where actual outcome matches predicted outcome
-## 188 true negatives
+## 155 true negatives
 false.negatives.2014<-count(prediction.matrix.2014[,2]==1 & prediction.matrix.2014[,4]==0)[2,2]
 false.negatives.2014
-## 29 false negatives.
+## 22 false negatives.
 
 sensitivity.2014<-true.positives.2014/sum(newData$outcome)
-## The optimal cut-off correctly identifies 69.79%
+sensitivity.2014
+## The optimal cut-off correctly identifies 77.08% of depositing students.
 specificity.2014<-true.negatives.2014/(length(newData$outcome)-sum(newData$outcome))
-## The optimal cut-off correclty identifies non-depositing students 72.87% of the time.
+specificity.2014
+## The optimal cut-off correclty identifies non-depositing students 60.07% of the time.
 accuracy.2014<-(true.negatives.2014 + true.positives.2014)/(length(newData$outcome))
-## The optimal cut-off is 78.32% accurate
+accuracy.2014
+## The optimal cut-off is 64.68% accurate
 precision.2014<-(true.positives.2014)/(true.positives.2014 + false.positives.2014)
-## The optimal cut-off is 48.9% precise
+precision.2014
+## The optimal cut-off is 41.81% precise
+
+
+
+## Does this outperform the Null Hypothesis as applied to the 2014 data?
+
+null.prediction.matrix.2014<-matrix(0,ncol=4,nrow=length(newData$outcome))
+colnames(null.prediction.matrix.2014)<-c("id", "outcome", "fitted probability","predicted outcome")
+## Construct a matrix with four columns: "id", "outcome", "fitted probability", and "predictd outcomes"
+null.prediction.matrix.2014[,1]<-newData$id
+## Put the ids into column 1
+null.prediction.matrix.2014[,2]<-newData$outcome
+## Puts the predicted outcomes in column 2
+null.fitted.values.2014 <- predict(bestfit.logit.2014,newData,type="response")
+## Creates a vector of fitted values from bestfit.logit
+null.prediction.matrix.2014[,3]<- null.fitted.values.2014
+## Puts this vector into column 3
+set.seed(1234)
+## For reproduction
+null.predicted.outcomes.2014<-rbinom(length(newData$outcome),1,0.3)
+## Creates a vector of random 1s and 0s
+## simluating a positive (1) and negative (0) response by creating a binomial 
+## distribution with rbinom(). The probability of success (1) is 30%
+null.prediction.matrix.2014[,4]<-null.predicted.outcomes.2014
+## Puts this predicted outcomes into column 4
+
+
+null.true.positives.2014<-count(null.prediction.matrix.2014[,2]==1 & null.prediction.matrix.2014[,4]==1)[2,2]
+null.true.positives.2014
+## True positives where actual outcome matches predicted outcome
+## 24 true positives
+null.false.positives.2014<-count(null.prediction.matrix.2014[,2]==0 & null.prediction.matrix.2014[,4]==1)[2,2]
+null.false.positives.2014
+## False positives where actual outcomes do not match predicted outcomes
+## 76 false positives
+null.true.negatives.2014<-count(null.prediction.matrix.2014[,2]==0 & null.prediction.matrix.2014[,4]==0)[2,2]
+null.true.negatives.2014
+## True negatives where actual outcome matches predicted outcome
+## 182 true negatives
+null.false.negatives.2014<-count(null.prediction.matrix.2014[,2]==1 & null.prediction.matrix.2014[,4]==0)[2,2]
+null.false.negatives.2014
+## 72 false negatives.
+
+null.sensitivity.2014<-null.true.positives.2014/length(newData$outcome)
+null.sensitivity.2014
+## The null hypothesis for 2014 data correctly identifies 6.77% of the depositing students.
+null.specificity.2014<-null.true.negatives.2014/(length(newData$outcome)-sum(newData$outcome))
+null.specificity.2014
+## The null hypothesis for 2014 correctly identifies 70.54 % of non-depositing students.
+null.accuracy.2014<-(null.true.negatives.2014+null.true.positives.2014)/(length(newData$outcome))
+null.accuracy.2014
+## The null hypothesis for 2014 is 58.19% accurate
+null.precision.2014<-(null.true.positives.2014)/(null.true.positives.2014 + null.false.positives.2014)
+null.precision.2014
+## The null hypothesis for 2014 is 24% precise
+
+
+
+
+# Junk Work Files
+#
+# plot7 <- ggplot(oldData, aes(x = sat, y = award)) + geom_point(aes(color = award)) + theme_few() +
+#     scale_color_gradient(low = "slategray4", high = "firebrick") + labs(x = "SAT Score",
+#                                                                         y = "Financial Aid Award",
+#                                                                         title = "SAT Score v. Award Amount") +
+#     xlim(c(1000,2400))
+# plot7
+# 
+# oldData2 <- oldData
+# oldData2$female[oldData2$female==1]<- "Female"
+# oldData2$female[oldData2$female==0]   <- "Male"
+# plot7<- ggplot(oldData2, aes(x = p_rank, y = award)) + geom_point(aes(color = a_rank)) + theme_few() +
+#     xlim(c(6,1)) + geom_jitter(alpha=0.7, aes(color= a_rank),position = position_jitter(width = .2)) +
+#     scale_color_gradient(low = "chocolate", high = "navyblue")
+# plot7 + facet_grid(.~female)
+# 
+# plot7<-ggplot(oldData2, aes(p_rank, fill = female)) + geom_density(alpha=0.2) + theme_few()
+# plot7
+# 
+# 
+# 
+# sp + facet_grid(. ~ sex, labeller=mf_labeller)
