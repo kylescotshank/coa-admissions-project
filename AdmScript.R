@@ -134,8 +134,10 @@ mean(correct.age$age,na.omit=T)
 median(correct.age$age)
 sd(correct.age$age)
 
+
 plot1<- ggplot(correct.age, aes(x = age)) + geom_histogram(binwidth=1, aes(fill=..count..)) + theme_few() +
-    scale_color_few("dark") + labs(x="Age of Applicant", y = "Count", title= "Histogram of Ages")
+    scale_color_few("dark") + labs(x="Age of Applicant", y = "Count", title= "Histogram of Ages") + 
+    xlim(c(10,50)) 
 plot1
 ## Histogram plot of ages
 
@@ -725,15 +727,6 @@ summary(no.interview.prank.deposits$p_rank)
 sd(no.interview.prank.deposits$p_rank)
 
 
-plot7 <- ggplot(oldData, aes(x = sat, y = award)) + geom_point(aes(color = award)) + theme_few() +
-    scale_color_gradient(low = "slategray4", high = "firebrick") + labs(x = "SAT Score",
-                                                                        y = "Financial Aid Award",
-                                                                        title = "SAT Score v. Award Amount") +
-    xlim(c(1000,2400))
-plot7
-
-
-
 ## ----------------------------------------------------------------------
 ## Of 1010 admitted students, the mean p_rank score was 2.525, with the median of 3 and standard deviation of 0.654
 ## Of 358 depositing students, the mean p_rank score was 2.489, with a median of 2 and standard deviation of 0.634
@@ -859,6 +852,17 @@ no.interview.arank.deposits<-oldData[oldData$interview==0 & oldData$outcome==1,]
 summary(no.interview.arank.deposits$a_rank)
 sd(no.interview.arank.deposits$a_rank)
 
+
+oldData2 <- oldData
+oldData2$female[oldData2$female==1]<- "Female"
+oldData2$female[oldData2$female==0]   <- "Male"
+plot7<- ggplot(oldData2, aes(x = p_rank, y = award)) + geom_point(aes(color = a_rank)) + theme_few() +
+    xlim(c(6,1)) + geom_jitter(alpha=0.7, aes(color= a_rank),position = position_jitter(width = .2)) +
+    scale_color_gradient(low = "chocolate", high = "seagreen4")
+plot7 + facet_grid(.~female)
+## Scatter facet plot showing p_rank (x-axis) v. award (y-axis) with a_rank being the color-fill density
+## of each individual data point. Faceting is done via respect to "Male" v. "Female"
+
 ## ----------------------------------------------------------------------
 ## Of 1010 admitted students, the mean a_rank score was 2.714, with the median of 3 and standard deviation of 0.819
 ## Of 358 depositing students, the mean a_rank score was 2.832, with a median of 3 and standard deviation of 0.816
@@ -910,6 +914,16 @@ interview.deposit.rate
 ## student population.
 ## Of the 358 depositing students, 182 had interviews, comprising 50.84% of the depositing student population.
 ## Students that interviewed had a deposit rate of 57.05%. 
+##
+## summary(oldData[oldData$interview==1,]$award)
+## summary(oldData[oldData$interview==1 & oldData$outcome==1,]$award)
+## summary(oldData[oldData$interview==0,]$award)
+## summary(oldData[oldData$interview==0 & oldData$outcome==1,]$award)
+##
+## The mean award for an admitted student with an interview was $17,580, with a median of $19,740.
+## The mean award for a depositing student with an interview as $19,900, with a median of $24,000.
+## The mean award for an admitted student without an interview was $15,470, with a median of $15,000.
+## The mean award for a depositing student without an interview was $21,780, with a median of $25,690.
 ## ----------------------------------------------------------------------
 
 summary(oldData$award)
@@ -923,6 +937,11 @@ length(which(oldData$award==0 & oldData$outcome==1))
 no.award.admit<-oldData[oldData$award==0,]
 no.award.deposit<-oldData[oldData$award==0 & oldData$outcome==1,]
 
+
+plot8<- ggplot(oldData2, aes(x = award)) + 
+    geom_histogram(aes(fill = ..count..), binwidth = 5000) + theme_few() 
+plot8 + facet_grid(.~female)
+## Facet plot, awards v. gender
 
 ## ----------------------------------------------------------------------
 ## The minimum award package for admitted students was was $0. This award was given to 221 admitted students, 
@@ -1212,8 +1231,10 @@ best.accuracy<-(best.true.negatives+best.true.positives)/(total.admits)
 best.precision<-(best.true.positives)/(best.true.positives+best.false.positives)
 ## The optimal cut-off is 58.41% precise
 
+## ----------------------------------------------------------------------
 ## Does this outperform the admissions-process "Null Model", which is that a random third of all
 ## admissions candidates will deposit?
+## ----------------------------------------------------------------------
 
 null.prediction.matrix<-matrix(0,ncol=4,nrow=length(oldData.reg$outcome))
 colnames(null.prediction.matrix)<-c("id", "outcome", "fitted probability","predicted outcome")
@@ -1236,6 +1257,9 @@ null.prediction.matrix[,4]<-null.predicted.outcomes
 ## Puts this predicted outcomes into column 4
 
 
+## ----------------------------------------------------------------------
+## Null model performance
+## ----------------------------------------------------------------------
 
 null.true.positives<-count(null.prediction.matrix[,2]==1 & null.prediction.matrix[,4]==1)[2,2]
 null.true.positives
@@ -1321,6 +1345,9 @@ prediction.matrix.2014[,4]<-predicted.outcomes.2014
 ## Puts these predicted outcomes into column 4
 
 
+## ----------------------------------------------------------------------
+## Testing bestfit.logit.2014 performance
+## ----------------------------------------------------------------------
 
 true.positives.2014<-count(prediction.matrix.2014[,2]==1 & prediction.matrix.2014[,4]==1)[2,2]
 true.positives.2014
@@ -1352,8 +1379,9 @@ precision.2014
 ## The optimal cut-off is 41.81% precise
 
 
-
+## ----------------------------------------------------------------------
 ## Does this outperform the Null Hypothesis as applied to the 2014 data?
+## ----------------------------------------------------------------------
 
 null.prediction.matrix.2014<-matrix(0,ncol=4,nrow=length(newData$outcome))
 colnames(null.prediction.matrix.2014)<-c("id", "outcome", "fitted probability","predicted outcome")
@@ -1407,27 +1435,15 @@ null.precision.2014
 
 
 
-
-# Junk Work Files
-#
-# plot7 <- ggplot(oldData, aes(x = sat, y = award)) + geom_point(aes(color = award)) + theme_few() +
-#     scale_color_gradient(low = "slategray4", high = "firebrick") + labs(x = "SAT Score",
-#                                                                         y = "Financial Aid Award",
-#                                                                         title = "SAT Score v. Award Amount") +
-#     xlim(c(1000,2400))
-# plot7
-# 
-# oldData2 <- oldData
-# oldData2$female[oldData2$female==1]<- "Female"
-# oldData2$female[oldData2$female==0]   <- "Male"
-# plot7<- ggplot(oldData2, aes(x = p_rank, y = award)) + geom_point(aes(color = a_rank)) + theme_few() +
-#     xlim(c(6,1)) + geom_jitter(alpha=0.7, aes(color= a_rank),position = position_jitter(width = .2)) +
-#     scale_color_gradient(low = "chocolate", high = "navyblue")
-# plot7 + facet_grid(.~female)
-# 
-# plot7<-ggplot(oldData2, aes(p_rank, fill = female)) + geom_density(alpha=0.2) + theme_few()
-# plot7
-# 
-# 
-# 
-# sp + facet_grid(. ~ sex, labeller=mf_labeller)
+## ----------------------------------------------------------------------
+## ----------------------------------------------------------------------
+## ------------------------
+## Outcome
+## ------------------------
+## ----------------------------------------------------------------------
+## ----------------------------------------------------------------------
+##
+## As measured by maximized sensitivity (correctly identifying true positives),
+## The bestfit.logit.2014 model drastically outperforms the null model. It may therefore
+## be of some value when attempting to forecast potential depositing students within the
+## admitted student pool. 
